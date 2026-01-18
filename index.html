@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>📘 Registro de Aulas Pro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container { 
+      max-width: 520px; 
+      margin: 0 auto; 
+      background: white; 
+      border-radius: 24px; 
+      box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+      overflow: hidden;
+    }
+    .header { 
+      background: linear-gradient(135deg, #4f46e5, #7c3aed, #ec4899); 
+      color: white; 
+      padding: 35px; 
+      text-align: center; 
+    }
+    .header h1 { font-size: 32px; margin-bottom: 8px; }
+    .content { padding: 35px; }
+    button { 
+      width: 100%; 
+      padding: 16px; 
+      margin: 8px 0; 
+      border: none; 
+      border-radius: 16px; 
+      font-size: 16px; 
+      font-weight: 600; 
+      cursor: pointer; 
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .btn-primary { 
+      background: linear-gradient(135deg, #4f46e5, #4338ca); 
+      color: white; 
+      box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+    }
+    .btn-primary:hover { 
+      background: linear-gradient(135deg, #4338ca, #3730a3); 
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(79, 70, 229, 0.5);
+    }
+    .btn-success { 
+      background: linear-gradient(135deg, #10b981, #059669); 
+      color: white; 
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+    }
+    .btn-success:hover { 
+      background: linear-gradient(135deg, #059669, #047857); 
+      transform: translateY(-3px);
+    }
+    .btn-secondary { 
+      background: linear-gradient(135deg, #6b7280, #4b5563); 
+      color: white; 
+    }
+    .btn-secondary:hover { 
+      background: linear-gradient(135deg, #4b5563, #374151); 
+      transform: translateY(-2px);
+    }
+    input, select, textarea { 
+      width: 100%; 
+      padding: 14px; 
+      margin: 8px 0; 
+      border: 2px solid #e5e7eb; 
+      border-radius: 12px; 
+      font-size: 16px;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+    input:focus, select:focus, textarea:focus { 
+      outline: none; 
+      border-color: #4f46e5; 
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+      transform: translateY(-2px);
+    }
+    .hidden { display: none !important; }
+    .lista { 
+      background: linear-gradient(145deg, #f8fafc, #f1f5f9); 
+      border-radius: 16px; 
+      max-height: 340px; 
+      overflow-y: auto; 
+      margin: 20px 0;
+      padding: 8px;
+      box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .item-lista { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      padding: 20px; 
+      margin: 8px 0;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .item-lista:hover { 
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    .item-nome { 
+      font-size: 16px; 
+      font-weight: 600; 
+      color: #1e293b;
+    }
+    /* BOTÃO DELETAR PERFEITO */
+    .btn-delete { 
+      width: 48px; 
+      height: 48px; 
+      border-radius: 50%; 
+      background: linear-gradient(135deg, #ef4444, #dc2626); 
+      color: white; 
+      border: none; 
+      font-size: 18px; 
+      font-weight: 700;
+      cursor: pointer; 
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-delete:hover { 
+      background: linear-gradient(135deg, #dc2626, #b91c1c); 
+      transform: translateY(-4px) scale(1.1);
+      box-shadow: 0 12px 30px rgba(239, 68, 68, 0.6);
+    }
+    .btn-delete:active { 
+      transform: translateY(-2px) scale(1.05);
+    }
+    .aula-item { 
+      background: white; 
+      border: 1px solid #e5e7eb; 
+      border-radius: 20px; 
+      padding: 25px; 
+      margin: 20px 0;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+      position: relative;
+    }
+    .aula-header {
+      display: flex; 
+      justify-content: space-between; 
+      align-items: flex-start; 
+      margin-bottom: 15px;
+    }
+    .vazio { 
+      text-align: center; 
+      color: #6b7280; 
+      padding: 60px 20px;
+      font-size: 18px;
+    }
+    .vazio::before {
+      content: '📝';
+      display: block;
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 480px) {
+      .container { margin: 10px; border-radius: 20px; }
+      .content { padding: 25px; }
+      .btn-delete { width: 44px; height: 44px; font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📘 Registro de Aulas Pro</h1>
+      <p>Professores • Disciplinas • Salas • Aulas</p>
+    </div>
+    
+    <div class="content">
+      <!-- TELA INICIAL -->
+      <div id="telaInicio">
+        <button class="btn-primary" onclick="mostrarTela('telaProf')">👨‍🏫 Gerenciar Professores</button>
+        <button class="btn-primary" onclick="mostrarTela('telaDisc')">📚 Gerenciar Disciplinas</button>
+        <button class="btn-primary" onclick="mostrarTela('telaSalas')">🏫 Gerenciar Salas</button>
+        <button class="btn-success" onclick="mostrarTela('telaAula')">➕ Nova Aula</button>
+        <button class="btn-primary" onclick="mostrarTela('telaLista')">📊 Minhas Aulas</button>
+      </div>
+
+      <!-- PROFESSORES -->
+      <div id="telaProf" class="hidden">
+        <h2 style="font-size: 26px; margin-bottom: 25px; text-align: center; color: #1f2937; background: linear-gradient(135deg, #4f46e5, #7c3aed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">👨‍🏫 Professores</h2>
+        <input id="nomeProfessor" placeholder="Nome do professor...">
+        <button class="btn-success" onclick="adicionarProfessor()">➕ Adicionar Professor</button>
+        <div id="listaProfessores" class="lista"></div>
+        <button class="btn-secondary" onclick="voltar()">← Voltar ao Início</button>
+      </div>
+
+      <!-- DISCIPLINAS -->
+      <div id="telaDisc" class="hidden">
+        <h2 style="font-size: 26px; margin-bottom: 25px; text-align: center; color: #1f2937; background: linear-gradient(135deg, #8b5cf6, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">📚 Disciplinas</h2>
+        <input id="nomeDisciplina" placeholder="Nome da disciplina...">
+        <button class="btn-success" onclick="adicionarDisciplina()">➕ Adicionar Disciplina</button>
+        <div id="listaDisciplinas" class="lista"></div>
+        <button class="btn-secondary" onclick="voltar()">← Voltar ao Início</button>
+      </div>
+
+      <!-- SALAS -->
+      <div id="telaSalas" class="hidden">
+        <h2 style="font-size: 26px; margin-bottom: 25px; text-align: center; color: #1f2937; background: linear-gradient(135deg, #10b981, #059669); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">🏫 Salas</h2>
+        <input id="nomeSala" placeholder="Ex: Sala 101, 1º Ano A...">
+        <button class="btn-success" onclick="adicionarSala()">➕ Adicionar Sala</button>
+        <div id="listaSalas" class="lista"></div>
+        <button class="btn-secondary" onclick="voltar()">← Voltar ao Início</button>
+      </div>
+
+      <!-- NOVA AULA -->
+      <div id="telaAula" class="hidden">
+        <h2 style="font-size: 26px; margin-bottom: 25px; text-align: center; color: #1f2937; background: linear-gradient(135deg, #10b981, #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">➕ Nova Aula</h2>
+        <select id="profAula"><option>Carregando professores...</option></select>
+        <select id="discAula"><option>Carregando disciplinas...</option></select>
+        <select id="salaAula"><option>Carregando salas...</option></select>
+        <input type="date" id="dataAula">
+        <textarea id="conteudoAula" placeholder="O que foi ensinado nesta aula..." rows="3"></textarea>
+        <textarea id="proxAula" placeholder="Plano para próxima aula..." rows="3"></textarea>
+        <textarea id="obsAula" placeholder="Observações importantes..." rows="3"></textarea>
+        <button class="btn-success" onclick="salvarAula()" style="font-size: 20px; padding: 20px;">💾 SALVAR AULA</button>
+        <button class="btn-secondary" onclick="voltar()">← Voltar ao Início</button>
+      </div>
+
+      <!-- LISTA AULAS -->
+      <div id="telaLista" class="hidden">
+        <h2 style="font-size: 26px; margin-bottom: 25px; text-align: center; color: #1f2937; background: linear-gradient(135deg, #f59e0b, #d97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">📊 Minhas Aulas</h2>
+        <div id="listaAulas" class="lista"></div>
+        <button class="btn-secondary" onclick="voltar()" style="margin-top: 25px;">← Voltar ao Início</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // DADOS GLOBAIS
+    let professores = JSON.parse(localStorage.getItem('professores')) || [];
+    let disciplinas = JSON.parse(localStorage.getItem('disciplinas')) || [];
+    let salas = JSON.parse(localStorage.getItem('salas')) || [];
+    let aulas = JSON.parse(localStorage.getItem('aulas')) || [];
+
+    // NAVEGAÇÃO
+    function mostrarTela(tela) {
+      document.querySelectorAll('[id*="tela"]').forEach(el => el.classList.add('hidden'));
+      document.getElementById(tela).classList.remove('hidden');
+      
+      if (tela === 'telaAula') atualizarSelects();
+      if (tela === 'telaLista') mostrarAulas();
+    }
+
+    function voltar() {
+      mostrarTela('telaInicio');
+    }
+
+    // PROFESSORES
+    function adicionarProfessor() {
+      let nome = document.getElementById('nomeProfessor').value.trim();
+      if (nome && !professores.includes(nome)) {
+        professores.push(nome);
+        localStorage.setItem('professores', JSON.stringify(professores));
+        document.getElementById('nomeProfessor').value = '';
+        mostrarListaProfessores();
+        atualizarSelects();
+        alert('✅ Professor adicionado!');
+      } else {
+        alert('❌ Nome inválido ou já existe!');
+      }
+    }
+
+    function mostrarListaProfessores() {
+      let html = '';
+      professores.forEach((p, i) => {
+        html += `
+          <div class="item-lista" style="border-left-color: #4f46e5;">
+            <span class="item-nome">👨‍🏫 ${p}</span>
+            <button class="btn-delete" onclick="removerProfessor(${i})" title="Excluir ${p}">🗑️</button>
+          </div>`;
+      });
+      document.getElementById('listaProfessores').innerHTML = html || '<div class="vazio">Nenhum professor cadastrado<br><small>Adicione o primeiro professor acima</small></div>';
+    }
+
+    function removerProfessor(i) {
+      if (confirm(`🗑️ Excluir professor?\n\n"${professores[i]}"`)) {
+        professores.splice(i, 1);
+        localStorage.setItem('professores', JSON.stringify(professores));
+        mostrarListaProfessores();
+        atualizarSelects();
+        alert('✅ Professor removido!');
+      }
+    }
+
+    // DISCIPLINAS
+    function adicionarDisciplina() {
+      let nome = document.getElementById('nomeDisciplina').value.trim();
+      if (nome && !disciplinas.includes(nome)) {
+        disciplinas.push(nome);
+        localStorage.setItem('disciplinas', JSON.stringify(disciplinas));
+        document.getElementById('nomeDisciplina').value = '';
+        mostrarListaDisciplinas();
+        atualizarSelects();
+        alert('✅ Disciplina adicionada!');
+      } else {
+        alert('❌ Nome inválido ou já existe!');
+      }
+    }
+
+    function mostrarListaDisciplinas() {
+      let html = '';
+      disciplinas.forEach((d, i) => {
+        html += `
+          <div class="item-lista" style="border-left-color: #8b5cf6;">
+            <span class="item-nome">📚 ${d}</span>
+            <button class="btn-delete" onclick="removerDisciplina(${i})" title="Excluir ${d}">🗑️</button>
+          </div>`;
+      });
+      document.getElementById('listaDisciplinas').innerHTML = html || '<div class="vazio">Nenhuma disciplina cadastrada<br><small>Adicione a primeira disciplina acima</small></div>';
+    }
+
+    function removerDisciplina(i) {
+      if (confirm(`🗑️ Excluir disciplina?\n\n"${disciplinas[i]}"`)) {
+        disciplinas.splice(i, 1);
+        localStorage.setItem('disciplinas', JSON.stringify(disciplinas));
+        mostrarListaDisciplinas();
+        atualizarSelects();
+        alert('✅ Disciplina removida!');
+      }
+    }
+
+    // SALAS
+    function adicionarSala() {
+      let nome = document.getElementById('nomeSala').value.trim();
+      if (nome && !salas.includes(nome)) {
+        salas.push(nome);
+        localStorage.setItem('salas', JSON.stringify(salas));
+        document.getElementById('nomeSala').value = '';
+        mostrarListaSalas();
+        atualizarSelects();
+        alert('✅ Sala adicionada!');
+      } else {
+        alert('❌ Nome inválido ou já existe!');
+      }
+    }
+
+    function mostrarListaSalas() {
+      let html = '';
+      salas.forEach((s, i) => {
+        html += `
+          <div class="item-lista" style="border-left-color: #10b981;">
+            <span class="item-nome">🏫 ${s}</span>
+            <button class="btn-delete" onclick="removerSala(${i})" title="Excluir ${s}">🗑️</button>
+          </div>`;
+      });
+      document.getElementById('listaSalas').innerHTML = html || '<div class="vazio">Nenhuma sala cadastrada<br><small>Adicione a primeira sala acima</small></div>';
+    }
+
+    function removerSala(i) {
+      if (confirm(`🗑️ Excluir sala?\n\n"${salas[i]}"`)) {
+        salas.splice(i, 1);
+        localStorage.setItem('salas', JSON.stringify(salas));
+        mostrarListaSalas();
+        atualizarSelects();
+        alert('✅ Sala removida!');
+      }
+    }
+
+    // SELECTS PARA AULAS
+    function atualizarSelects() {
+      let profHtml = '<option value="">👨‍🏫 Selecione professor</option>';
+      professores.forEach(p => profHtml += `<option value="${p}">${p}</option>`);
+      document.getElementById('profAula').innerHTML = profHtml;
+
+      let discHtml = '<option value="">📚 Selecione disciplina</option>';
+      disciplinas.forEach(d => discHtml += `<option value="${d}">${d}</option>`);
+      document.getElementById('discAula').innerHTML = discHtml;
+
+      let salaHtml = '<option value="">🏫 Selecione sala</option>';
+      salas.forEach(s => salaHtml += `<option value="${s}">${s}</option>`);
+      document.getElementById('salaAula').innerHTML = salaHtml;
+    }
+
+    // SALVAR AULA
+    function salvarAula() {
+      let aula = {
+        prof: document.getElementById('profAula').value,
+        disc: document.getElementById('discAula').value,
+        sala: document.getElementById('salaAula').value,
+        data: document.getElementById('dataAula').value,
+        conteudo: document.getElementById('conteudoAula').value,
+        prox: document.getElementById('proxAula').value,
+        obs: document.getElementById('obsAula').value,
+        id: Date.now()
+      };
+
+      if (aula.prof && aula.disc && aula.data) {
+        aulas.push(aula);
+        localStorage.setItem('aulas', JSON.stringify(aulas));
+        alert('✅ Aula salva com sucesso!');
+        document.querySelectorAll('#telaAula input, #telaAula select, #telaAula textarea').forEach(el => el.value = '');
+      } else {
+        alert('❌ Preencha professor, disciplina e data obrigatoriamente!');
+      }
+    }
+
+    // MOSTRAR AULAS COM DELETE
+    function mostrarAulas() {
+      let html = '';
+      aulas.forEach((aula, i) => {
+        html += `
+        <div class="aula-item">
+          <div class="aula-header">
+            <div style="display: flex; gap: 12px; flex-wrap: wrap; flex: 1;">
+              <span style="padding: 8px 14px; background: #dbeafe; color: #1e40af; border-radius: 20px; font-size: 14px; font-weight: 600;">👨‍🏫 ${aula.prof}</span>
+              <span style="padding: 8px 14px; background: #ede9fe; color: #6b21a8; border-radius: 20px; font-size: 14px; font-weight: 600;">📚 ${aula.disc}</span>
+              ${aula.sala ? `<span style="padding: 8px 14px; background: #d1fae5; color: #065f46; border-radius: 20px; font-size: 14px; font-weight: 600;">🏫 ${aula.sala}</span>` : ''}
+            </div>
+            <button class="btn-delete" onclick="removerAula(${i})" title="Excluir aula de ${aula.prof}">🗑️</button>
+          </div>
+          <p style="color: #374151; margin-bottom: 12px; font-weight: 600;"><strong>📅</strong> ${new Date(aula.data).toLocaleDateString('pt-BR')}</p>
+          <div style="margin-bottom: 12px; line-height: 1.6;">
+            <strong style="color: #1f2937;">📝 Conteúdo:</strong><br>${aula.conteudo}
+          </div>
+          ${aula.prox ? `<div style="margin-bottom: 12px; line-height: 1.6;">
+            <strong style="color: #1f2937;">⏭️ Próxima aula:</strong><br>${aula.prox}
+          </div>` : ''}
+          ${aula.obs ? `<div style="line-height: 1.6; color: #6b7280;">
+            <strong style="color: #1f2937;">💭 Observações:</strong><br>${aula.obs}
+          </div>` : ''}
+        </div>`;
+      });
+      document.getElementById('listaAulas').innerHTML = html || '<div class="vazio">Nenhuma aula cadastrada ainda<br><small>Cadastre sua primeira aula!</small></div>';
+    }
+
+    // DELETAR AULA
+    function removerAula(i) {
+      if (confirm(`🗑️ Excluir esta aula?\n\n👨‍🏫 ${aulas[i].prof}\n📚 ${aulas[i].disc}\n📅 ${new Date(aulas[i].data).toLocaleDateString('pt-BR')}`)) {
+        aulas.splice(i, 1);
+        localStorage.setItem('aulas', JSON.stringify(aulas));
+        mostrarAulas();
+        alert('✅ Aula removida com sucesso!');
+      }
+    }
+
+    // INICIALIZAÇÃO
+    mostrarListaProfessores();
+    mostrarListaDisciplinas();
+    mostrarListaSalas();
+  </script>
+</body>
+</html>
