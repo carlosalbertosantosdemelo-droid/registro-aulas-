@@ -1,208 +1,363 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Registro de Aulas</title>
 
 <style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI;}
+
 body{
-    font-family: Arial, sans-serif;
-    background:#f2f4f8;
-    padding:20px;
+background:linear-gradient(135deg,#1e3a8a,#dc2626);
+display:flex;
+justify-content:center;
+padding:20px;
 }
 
-h2{
-    text-align:center;
+.app{
+width:100%;
+max-width:420px;
+background:#fff;
+border-radius:28px;
+overflow:hidden;
+box-shadow:0 25px 50px rgba(0,0,0,.4);
 }
+
+.header{
+background:linear-gradient(135deg,#1e3a8a,#dc2626);
+color:#fff;
+padding:22px;
+text-align:center;
+}
+
+.content{padding:18px;}
+
+.tela{display:none;}
+.tela.ativa{display:block;}
+
+.menu button{
+width:100%;
+padding:14px;
+margin:7px 0;
+border:none;
+border-radius:14px;
+background:linear-gradient(135deg,#1e3a8a,#dc2626);
+color:#fff;
+font-weight:600;
+cursor:pointer;
+}
+
+input,select,textarea{
+width:100%;
+padding:12px;
+margin:6px 0;
+border-radius:10px;
+border:1px solid #cbd5e1;
+}
+
+textarea{resize:none;}
+
+.btn{
+width:100%;
+padding:12px;
+margin-top:8px;
+border:none;
+border-radius:12px;
+background:#dc2626;
+color:#fff;
+font-weight:600;
+cursor:pointer;
+}
+
+.btn.voltar{background:#1e3a8a;}
 
 .card{
-    background:#ffffff;
-    padding:15px;
-    margin-bottom:20px;
-    border-radius:10px;
-    box-shadow:0 4px 10px rgba(0,0,0,0.08);
+background:#f1f5f9;
+padding:14px;
+border-radius:14px;
+margin:10px 0;
+box-shadow:0 6px 15px rgba(0,0,0,.15);
+font-size:14px;
 }
 
-input, select, button{
-    width:100%;
-    padding:8px;
-    margin-top:6px;
-    border-radius:6px;
-    border:1px solid #ccc;
+.excluir{
+margin-top:6px;
+padding:6px 10px;
+border:none;
+border-radius:8px;
+background:#1e3a8a;
+color:#fff;
+cursor:pointer;
 }
 
-button{
-    background:#1976d2;
-    color:white;
-    border:none;
-    cursor:pointer;
+.filtro{
+background:#e2e8f0;
+padding:10px;
+border-radius:10px;
+margin-bottom:10px;
 }
 
-button:hover{
-    background:#0d47a1;
-}
-
-table{
-    width:100%;
-    border-collapse: collapse;
-    margin-top:10px;
-}
-
-th, td{
-    padding:8px;
-    border-bottom:1px solid #ddd;
-}
-
-th{
-    background:#1976d2;
-    color:white;
+.mes{
+margin-top:15px;
+font-weight:bold;
+color:#1e3a8a;
 }
 </style>
 </head>
 
 <body>
 
+<div class="app">
+<div class="header">
 <h2>📘 Registro de Aulas</h2>
-
-<div class="card">
-<h3>Nova Aula</h3>
-
-<input type="date" id="data">
-<input type="text" id="professor" placeholder="Professor">
-<input type="text" id="sala" placeholder="Sala">
-<input type="text" id="conteudo" placeholder="Conteúdo">
-
-<button id="btnSalvar">Salvar Aula</button>
 </div>
 
-<div class="card">
-<h3>Filtros</h3>
+<div class="content">
 
-<select id="filtroMes">
-<option value="">Todos os Meses</option>
-</select>
-
-<select id="filtroProfessor">
-<option value="">Todos os Professores</option>
-</select>
-
+<!-- MENU -->
+<div id="menu" class="tela ativa menu">
+<button onclick="abrir('prof')">👨‍🏫 Professores</button>
+<button onclick="abrir('disc')">📚 Disciplinas</button>
+<button onclick="abrir('sala')">🏫 Salas</button>
+<button onclick="abrir('aula')">➕ Nova Aula</button>
+<button onclick="abrir('lista')">📊 Minhas Aulas</button>
 </div>
 
-<div class="card">
-<h3>Lista de Aulas</h3>
+<!-- PROFESSORES -->
+<div id="prof" class="tela">
+<h3>👨‍🏫 Professores</h3>
+<input id="nomeProf" placeholder="Nome do Professor">
+<button class="btn" onclick="addProfessor()">Salvar</button>
+<div id="listaProf"></div>
+<button class="btn voltar" onclick="voltar()">Voltar</button>
+</div>
 
-<table>
-<thead>
-<tr>
-<th>Data</th>
-<th>Mês</th>
-<th>Professor</th>
-<th>Sala</th>
-<th>Conteúdo</th>
-</tr>
-</thead>
-<tbody id="lista"></tbody>
-</table>
+<!-- DISCIPLINAS -->
+<div id="disc" class="tela">
+<h3>📚 Disciplinas</h3>
+<input id="nomeDisc" placeholder="Nome da Disciplina">
+<button class="btn" onclick="addDisciplina()">Salvar</button>
+<div id="listaDisc"></div>
+<button class="btn voltar" onclick="voltar()">Voltar</button>
+</div>
 
+<!-- SALAS -->
+<div id="sala" class="tela">
+<h3>🏫 Salas</h3>
+<input id="nomeSala" placeholder="Nome da Sala">
+<button class="btn" onclick="addSala()">Salvar</button>
+<div id="listaSala"></div>
+<button class="btn voltar" onclick="voltar()">Voltar</button>
+</div>
+
+<!-- NOVA AULA -->
+<div id="aula" class="tela">
+<h3>➕ Nova Aula</h3>
+
+<input type="date" id="dataAula">
+<select id="profAula"></select>
+<select id="discAula"></select>
+<select id="salaAula"></select>
+<textarea id="conteudoAula" placeholder="Conteúdo da Aula"></textarea>
+
+<button class="btn" onclick="addAula()">Salvar Aula</button>
+<button class="btn voltar" onclick="voltar()">Voltar</button>
+</div>
+
+<!-- LISTA -->
+<div id="lista" class="tela">
+<h3>📊 Minhas Aulas</h3>
+
+<div class="filtro">
+<input type="date" id="filtroData" onchange="renderAulas()">
+<select id="filtroSala" onchange="renderAulas()"></select>
+<select id="filtroProfessor" onchange="renderAulas()"></select>
+</div>
+
+<div id="listaAulas"></div>
+<button class="btn voltar" onclick="voltar()">Voltar</button>
+</div>
+
+</div>
 </div>
 
 <script>
 
-document.addEventListener("DOMContentLoaded", function(){
-
+let professores = JSON.parse(localStorage.getItem("professores")) || [];
+let disciplinas = JSON.parse(localStorage.getItem("disciplinas")) || [];
+let salas = JSON.parse(localStorage.getItem("salas")) || [];
 let aulas = JSON.parse(localStorage.getItem("aulas")) || [];
 
-const btnSalvar = document.getElementById("btnSalvar");
-const filtroMes = document.getElementById("filtroMes");
-const filtroProfessor = document.getElementById("filtroProfessor");
-const lista = document.getElementById("lista");
-
-btnSalvar.addEventListener("click", salvar);
-filtroMes.addEventListener("change", mostrar);
-filtroProfessor.addEventListener("change", mostrar);
-
 function salvar(){
-
-let data = document.getElementById("data").value;
-let professor = document.getElementById("professor").value.trim();
-let sala = document.getElementById("sala").value.trim();
-let conteudo = document.getElementById("conteudo").value.trim();
-
-if(!data || !professor || !sala || !conteudo){
-alert("Preencha todos os campos.");
-return;
+localStorage.setItem("professores",JSON.stringify(professores));
+localStorage.setItem("disciplinas",JSON.stringify(disciplinas));
+localStorage.setItem("salas",JSON.stringify(salas));
+localStorage.setItem("aulas",JSON.stringify(aulas));
 }
 
-let dataObj = new Date(data);
-let mes = dataObj.toLocaleString("pt-BR",{month:"long"});
-
-aulas.push({data, mes, professor, sala, conteudo});
-
-localStorage.setItem("aulas", JSON.stringify(aulas));
-
-document.getElementById("data").value="";
-document.getElementById("professor").value="";
-document.getElementById("sala").value="";
-document.getElementById("conteudo").value="";
-
-atualizarFiltros();
-mostrar();
+function abrir(id){
+document.querySelectorAll(".tela").forEach(t=>t.classList.remove("ativa"));
+document.getElementById(id).classList.add("ativa");
+if(id==="aula"){ atualizarSelects(); }
+if(id==="lista"){ atualizarFiltros(); renderAulas(); }
 }
+
+function voltar(){
+document.querySelectorAll(".tela").forEach(t=>t.classList.remove("ativa"));
+document.getElementById("menu").classList.add("ativa");
+}
+
+/* CADASTROS */
+
+function addProfessor(){
+let nome = nomeProf.value;
+if(!nome) return;
+professores.push({id:Date.now(),nome});
+nomeProf.value="";
+salvar();
+renderProf();
+}
+
+function addDisciplina(){
+let nome = nomeDisc.value;
+if(!nome) return;
+disciplinas.push({id:Date.now(),nome});
+nomeDisc.value="";
+salvar();
+renderDisc();
+}
+
+function addSala(){
+let nome = nomeSala.value;
+if(!nome) return;
+salas.push({id:Date.now(),nome});
+nomeSala.value="";
+salvar();
+renderSala();
+}
+
+function renderProf(){
+listaProf.innerHTML="";
+professores.forEach((p,i)=>{
+listaProf.innerHTML+=`<div class="card">${p.nome}
+<button class="excluir" onclick="professores.splice(${i},1);salvar();renderProf();">Excluir</button></div>`;
+});
+}
+
+function renderDisc(){
+listaDisc.innerHTML="";
+disciplinas.forEach((d,i)=>{
+listaDisc.innerHTML+=`<div class="card">${d.nome}
+<button class="excluir" onclick="disciplinas.splice(${i},1);salvar();renderDisc();">Excluir</button></div>`;
+});
+}
+
+function renderSala(){
+listaSala.innerHTML="";
+salas.forEach((s,i)=>{
+listaSala.innerHTML+=`<div class="card">${s.nome}
+<button class="excluir" onclick="salas.splice(${i},1);salvar();renderSala();">Excluir</button></div>`;
+});
+}
+
+/* SELECTS */
+
+function atualizarSelects(){
+profAula.innerHTML="";
+discAula.innerHTML="";
+salaAula.innerHTML="";
+
+professores.forEach(p=> profAula.innerHTML+=`<option value="${p.id}">${p.nome}</option>`);
+disciplinas.forEach(d=> discAula.innerHTML+=`<option value="${d.id}">${d.nome}</option>`);
+salas.forEach(s=> salaAula.innerHTML+=`<option value="${s.id}">${s.nome}</option>`);
+}
+
+/* AULAS */
+
+function addAula(){
+let aula={
+id:Date.now(),
+data:dataAula.value,
+prof:profAula.value,
+disc:discAula.value,
+sala:salaAula.value,
+conteudo:conteudoAula.value
+};
+if(!aula.data) return;
+aulas.push(aula);
+salvar();
+
+dataAula.value="";
+conteudoAula.value="";
+
+alert("Aula registrada!");
+}
+
+/* FILTROS */
 
 function atualizarFiltros(){
+filtroSala.innerHTML="<option value=''>Todas Salas</option>";
+filtroProfessor.innerHTML="<option value=''>Todos Professores</option>";
 
-filtroMes.innerHTML = '<option value="">Todos os Meses</option>';
-filtroProfessor.innerHTML = '<option value="">Todos os Professores</option>';
-
-let meses = [...new Set(aulas.map(a=>a.mes))];
-let professores = [...new Set(aulas.map(a=>a.professor))];
-
-meses.forEach(m=>{
-let op = document.createElement("option");
-op.value = m;
-op.textContent = m;
-filtroMes.appendChild(op);
-});
-
-professores.forEach(p=>{
-let op = document.createElement("option");
-op.value = p;
-op.textContent = p;
-filtroProfessor.appendChild(op);
-});
-
+salas.forEach(s=> filtroSala.innerHTML+=`<option value="${s.id}">${s.nome}</option>`);
+professores.forEach(p=> filtroProfessor.innerHTML+=`<option value="${p.id}">${p.nome}</option>`);
 }
 
-function mostrar(){
+function renderAulas(){
+listaAulas.innerHTML="";
 
-lista.innerHTML = "";
+let fd=filtroData.value;
+let fs=filtroSala.value;
+let fp=filtroProfessor.value;
 
-let filtradas = aulas.filter(a=>
-(filtroMes.value==="" || a.mes===filtroMes.value) &&
-(filtroProfessor.value==="" || a.professor===filtroProfessor.value)
-);
+let ordenadas=[...aulas].sort((a,b)=> new Date(b.data)-new Date(a.data));
 
-filtradas.sort((a,b)=> new Date(a.data) - new Date(b.data));
+let mesAtual="";
 
-filtradas.forEach(a=>{
-lista.innerHTML += `
-<tr>
-<td>${new Date(a.data).toLocaleDateString("pt-BR")}</td>
-<td>${a.mes}</td>
-<td>${a.professor}</td>
-<td>${a.sala}</td>
-<td>${a.conteudo}</td>
-</tr>
-`;
-});
+ordenadas.forEach((a,i)=>{
 
+if(
+(!fd||a.data===fd)&&
+(!fs||a.sala===fs)&&
+(!fp||a.prof===fp)
+){
+
+let dataObj=new Date(a.data);
+let mes=dataObj.toLocaleString("pt-BR",{month:"long",year:"numeric"});
+
+if(mes!==mesAtual){
+mesAtual=mes;
+listaAulas.innerHTML+=`<div class="mes">${mes.toUpperCase()}</div>`;
 }
 
-atualizarFiltros();
-mostrar();
+let p=professores.find(x=>x.id==a.prof);
+let d=disciplinas.find(x=>x.id==a.disc);
+let s=salas.find(x=>x.id==a.sala);
 
+listaAulas.innerHTML+=`
+<div class="card">
+📅 ${a.data}<br>
+🏫 ${s?s.nome:""}<br>
+👨‍🏫 ${p?p.nome:""}<br>
+📚 ${d?d.nome:""}<br>
+📝 ${a.conteudo}
+<button class="excluir" onclick="excluirAula(${i})">Excluir</button>
+</div>`;
+}
 });
+}
+
+function excluirAula(i){
+aulas.splice(i,1);
+salvar();
+renderAulas();
+}
+
+renderProf();
+renderDisc();
+renderSala();
+
 </script>
 
 </body>
