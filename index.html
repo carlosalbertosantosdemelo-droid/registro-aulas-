@@ -6,22 +6,23 @@
 <title>Registro de Aulas Pro</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial, sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
 
 body{
 background: linear-gradient(135deg,#5f6fd8,#8a4fd1);
-min-height:100vh;
 display:flex;
 justify-content:center;
 align-items:center;
+min-height:100vh;
 }
 
 .container{
-width:380px;
+width:390px;
 background:#f1f1f1;
 border-radius:25px;
 overflow:hidden;
 box-shadow:0 20px 40px rgba(0,0,0,0.2);
+position:relative;
 }
 
 .header{
@@ -31,26 +32,17 @@ padding:40px 20px;
 text-align:center;
 }
 
-.header h1{
-font-size:32px;
-margin-bottom:10px;
-}
+.header h1{font-size:28px;margin-bottom:8px;}
 
-.header p{
-opacity:0.9;
-}
-
-.content{
-padding:25px;
-}
+.content{padding:25px;}
 
 .button{
 width:100%;
 padding:18px;
-margin-bottom:18px;
+margin-bottom:15px;
 border:none;
 border-radius:40px;
-font-size:18px;
+font-size:17px;
 color:white;
 cursor:pointer;
 box-shadow:0 8px 20px rgba(0,0,0,0.2);
@@ -58,8 +50,6 @@ box-shadow:0 8px 20px rgba(0,0,0,0.2);
 
 .blue{background:#4b43c6;}
 .green{background:#19a66a;}
-
-.hidden{display:none;}
 
 input,select,textarea{
 width:100%;
@@ -69,6 +59,8 @@ border-radius:8px;
 border:1px solid #ccc;
 }
 
+textarea{resize:none;height:80px;}
+
 .small-btn{
 background:#4b43c6;
 color:white;
@@ -76,7 +68,7 @@ border:none;
 padding:6px 10px;
 border-radius:6px;
 cursor:pointer;
-margin-top:5px;
+margin:5px 0;
 }
 
 .logout{
@@ -85,12 +77,20 @@ top:10px;
 right:10px;
 background:red;
 color:white;
-padding:6px 10px;
 border:none;
+padding:5px 10px;
 border-radius:6px;
 cursor:pointer;
 }
 
+.hidden{display:none;}
+
+.card{
+background:white;
+padding:10px;
+border-radius:10px;
+margin-bottom:10px;
+}
 </style>
 </head>
 <body>
@@ -99,7 +99,7 @@ cursor:pointer;
 <div id="loginScreen" class="container">
 <div class="header">
 <h1>📘 Registro de Aulas Pro</h1>
-<p>Faça login para continuar</p>
+<p>Login do Administrador</p>
 </div>
 <div class="content">
 <input type="text" id="user" placeholder="Usuário">
@@ -118,15 +118,14 @@ cursor:pointer;
 </div>
 
 <div class="content" id="home">
-
-<button class="button blue" onclick="showSection('professores')">👨‍🏫 Gerenciar Professores</button>
-<button class="button blue" onclick="showSection('disciplinas')">📚 Gerenciar Disciplinas</button>
-<button class="button blue" onclick="showSection('salas')">🏫 Gerenciar Salas</button>
-<button class="button green" onclick="showSection('novaAula')">➕ Nova Aula</button>
-<button class="button blue" onclick="showSection('minhasAulas')">📊 Minhas Aulas</button>
-
+<button class="button blue" onclick="show('professores')">👨‍🏫 Gerenciar Professores</button>
+<button class="button blue" onclick="show('disciplinas')">📚 Gerenciar Disciplinas</button>
+<button class="button blue" onclick="show('salas')">🏫 Gerenciar Salas</button>
+<button class="button green" onclick="show('novaAula')">➕ Nova Aula</button>
+<button class="button blue" onclick="show('minhasAulas')">📊 Minhas Aulas</button>
 </div>
 
+<!-- GERENCIAR -->
 <div class="content hidden" id="professores">
 <h3>Professores</h3>
 <input id="novoProfessor" placeholder="Nome do professor">
@@ -151,28 +150,30 @@ cursor:pointer;
 <button class="small-btn" onclick="voltar()">Voltar</button>
 </div>
 
+<!-- NOVA AULA -->
 <div class="content hidden" id="novaAula">
-<h3>Nova Aula</h3>
+<h3>Aula Atual</h3>
 <select id="professorSelect"></select>
 <select id="disciplinaSelect"></select>
 <select id="salaSelect"></select>
 <input type="date" id="dataAula">
-<textarea id="conteudoAula" placeholder="Conteúdo da aula"></textarea>
+<textarea id="conteudoAtual" placeholder="Conteúdo da Aula Atual"></textarea>
 
-<label>
-<input type="checkbox" id="usarComoProxima">
- Usar como próxima aula
-</label>
+<h3>Próxima Aula</h3>
+<textarea id="conteudoProxima" placeholder="Conteúdo da Próxima Aula"></textarea>
 
 <button class="small-btn" onclick="salvarAula()">Salvar Aula</button>
 <button class="small-btn" onclick="voltar()">Voltar</button>
 </div>
 
+<!-- MINHAS AULAS -->
 <div class="content hidden" id="minhasAulas">
-<h3>Minhas Aulas</h3>
-
+<h3>Filtros</h3>
 <input type="date" id="filtroData" onchange="renderAulas()">
+<select id="filtroProfessor" onchange="renderAulas()"></select>
+<select id="filtroDisciplina" onchange="renderAulas()"></select>
 
+<h3>Lista de Aulas</h3>
 <div id="listaAulas"></div>
 
 <button class="small-btn" onclick="voltar()">Voltar</button>
@@ -184,6 +185,7 @@ cursor:pointer;
 let professores=[],disciplinas=[],salas=[],aulas=[];
 let ultimaAtividade=Date.now();
 
+/* LOGIN */
 function login(){
 if(user.value==="admin" && pass.value==="1234"){
 loginScreen.classList.add("hidden");
@@ -191,34 +193,29 @@ app.classList.remove("hidden");
 }
 }
 
-function logout(){
-location.reload();
-}
+function logout(){location.reload();}
 
+/* AUTO LOGOUT 1 MIN */
 document.onclick=document.onmousemove=document.onkeypress=function(){
 ultimaAtividade=Date.now();
 };
-
 setInterval(()=>{
-if(Date.now()-ultimaAtividade>60000){
-logout();
-}
+if(Date.now()-ultimaAtividade>60000){logout();}
 },5000);
 
-function showSection(id){
-home.classList.add("hidden");
+/* NAVEGAÇÃO */
+function show(id){
 document.querySelectorAll("#app .content").forEach(e=>e.classList.add("hidden"));
 document.getElementById(id).classList.remove("hidden");
 updateSelects();
-renderLists();
 renderAulas();
 }
-
 function voltar(){
 document.querySelectorAll("#app .content").forEach(e=>e.classList.add("hidden"));
 home.classList.remove("hidden");
 }
 
+/* CADASTROS */
 function addProfessor(){
 if(novoProfessor.value){
 professores.push(novoProfessor.value);
@@ -226,7 +223,6 @@ novoProfessor.value="";
 renderLists();
 }
 }
-
 function addDisciplina(){
 if(novaDisciplina.value){
 disciplinas.push(novaDisciplina.value);
@@ -234,7 +230,6 @@ novaDisciplina.value="";
 renderLists();
 }
 }
-
 function addSala(){
 if(novaSala.value){
 salas.push(novaSala.value);
@@ -242,60 +237,70 @@ novaSala.value="";
 renderLists();
 }
 }
-
 function renderLists(){
 listaProfessores.innerHTML=professores.map(p=>"<li>"+p+"</li>").join("");
 listaDisciplinas.innerHTML=disciplinas.map(d=>"<li>"+d+"</li>").join("");
 listaSalas.innerHTML=salas.map(s=>"<li>"+s+"</li>").join("");
 }
 
+/* SELECTS */
 function updateSelects(){
-professorSelect.innerHTML=professores.map(p=>"<option>"+p+"</option>").join("");
-disciplinaSelect.innerHTML=disciplinas.map(d=>"<option>"+d+"</option>").join("");
-salaSelect.innerHTML=salas.map(s=>"<option>"+s+"</option>").join("");
+professorSelect.innerHTML="<option value=''>Professor</option>"+professores.map(p=>"<option>"+p+"</option>").join("");
+disciplinaSelect.innerHTML="<option value=''>Disciplina</option>"+disciplinas.map(d=>"<option>"+d+"</option>").join("");
+salaSelect.innerHTML="<option value=''>Sala</option>"+salas.map(s=>"<option>"+s+"</option>").join("");
+
+filtroProfessor.innerHTML="<option value=''>Todos Professores</option>"+professores.map(p=>"<option>"+p+"</option>").join("");
+filtroDisciplina.innerHTML="<option value=''>Todas Disciplinas</option>"+disciplinas.map(d=>"<option>"+d+"</option>").join("");
 }
 
+/* SALVAR AULA */
 function salvarAula(){
-let aula={
+if(!professorSelect.value) return alert("Selecione professor");
+
+aulas.push({
 professor:professorSelect.value,
 disciplina:disciplinaSelect.value,
 sala:salaSelect.value,
 data:dataAula.value,
-conteudo:conteudoAula.value,
-proxima:usarComoProxima.checked
-};
+atual:conteudoAtual.value,
+proxima:conteudoProxima.value
+});
 
-aulas.push(aula);
-
-if(usarComoProxima.checked){
-aulas.forEach(a=>{if(a!==aula)a.proxima=false});
-}
-
-conteudoAula.value="";
-usarComoProxima.checked=false;
+conteudoAtual.value="";
+conteudoProxima.value="";
+dataAula.value="";
 
 alert("Aula salva!");
 }
 
+/* LISTAR AULAS COM FILTRO */
 function renderAulas(){
-let filtro=filtroData.value;
-let lista=aulas.filter(a=>!filtro || a.data===filtro);
+let filtroD=filtroData.value;
+let filtroP=filtroProfessor.value;
+let filtroDisc=filtroDisciplina.value;
 
-listaAulas.innerHTML=lista.map(a=>`
-<div style="background:white;padding:10px;margin-bottom:10px;border-radius:10px;">
+let lista=aulas.filter(a=>
+(!filtroD || a.data===filtroD) &&
+(!filtroP || a.professor===filtroP) &&
+(!filtroDisc || a.disciplina===filtroDisc)
+);
+
+listaAulas.innerHTML=lista.map((a,i)=>`
+<div class="card">
 <strong>${a.professor}</strong><br>
 ${a.disciplina} - ${a.sala}<br>
-${a.data}<br>
-Conteúdo: ${a.conteudo}<br>
-${a.proxima?"<span style='color:green;'>Próxima Aula</span>":""}
-<button class="small-btn" onclick="definirProxima(${aulas.indexOf(a)})">Usar como próxima aula</button>
+${a.data}<br><br>
+<b>Aula Atual:</b><br>${a.atual || "-"}<br><br>
+<b>Próxima Aula:</b><br>${a.proxima || "-"}<br>
+<button class="small-btn" onclick="usarProxima(${i})">Usar Próxima como Atual</button>
 </div>
 `).join("");
 }
 
-function definirProxima(index){
-aulas.forEach(a=>a.proxima=false);
-aulas[index].proxima=true;
+/* TRANSFORMAR PRÓXIMA EM ATUAL */
+function usarProxima(i){
+aulas[i].atual=aulas[i].proxima;
+aulas[i].proxima="";
 renderAulas();
 }
 
