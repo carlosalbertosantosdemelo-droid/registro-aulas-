@@ -72,6 +72,10 @@ cursor:pointer;
 margin:5px 3px;
 }
 
+.delete-btn{
+background:red;
+}
+
 .logout{
 position:absolute;
 top:10px;
@@ -193,9 +197,7 @@ atualizarTudo();
 }
 }
 
-function logout(){
-location.reload();
-}
+function logout(){location.reload();}
 
 function showSection(id){
 document.querySelectorAll("#app .content").forEach(e=>e.classList.add("hidden"));
@@ -214,7 +216,7 @@ if(novoProfessor.value.trim()){
 professores.push(novoProfessor.value.trim());
 novoProfessor.value="";
 salvarStorage();
-renderListas();
+atualizarTudo();
 }
 }
 
@@ -223,7 +225,7 @@ if(novaDisciplina.value.trim()){
 disciplinas.push(novaDisciplina.value.trim());
 novaDisciplina.value="";
 salvarStorage();
-renderListas();
+atualizarTudo();
 }
 }
 
@@ -232,14 +234,46 @@ if(novaSala.value.trim()){
 salas.push(novaSala.value.trim());
 novaSala.value="";
 salvarStorage();
-renderListas();
+atualizarTudo();
+}
+}
+
+function excluirProfessor(i){
+if(confirm("Excluir professor?")){
+professores.splice(i,1);
+salvarStorage();
+atualizarTudo();
+}
+}
+
+function excluirDisciplina(i){
+if(confirm("Excluir disciplina?")){
+disciplinas.splice(i,1);
+salvarStorage();
+atualizarTudo();
+}
+}
+
+function excluirSala(i){
+if(confirm("Excluir sala?")){
+salas.splice(i,1);
+salvarStorage();
+atualizarTudo();
 }
 }
 
 function renderListas(){
-listaProfessores.innerHTML = professores.map(p=>`<li>${p}</li>`).join("");
-listaDisciplinas.innerHTML = disciplinas.map(d=>`<li>${d}</li>`).join("");
-listaSalas.innerHTML = salas.map(s=>`<li>${s}</li>`).join("");
+listaProfessores.innerHTML = professores.map((p,i)=>`
+<li>${p} <button class="small-btn delete-btn" onclick="excluirProfessor(${i})">Excluir</button></li>
+`).join("");
+
+listaDisciplinas.innerHTML = disciplinas.map((d,i)=>`
+<li>${d} <button class="small-btn delete-btn" onclick="excluirDisciplina(${i})">Excluir</button></li>
+`).join("");
+
+listaSalas.innerHTML = salas.map((s,i)=>`
+<li>${s} <button class="small-btn delete-btn" onclick="excluirSala(${i})">Excluir</button></li>
+`).join("");
 }
 
 function atualizarSelects(){
@@ -265,12 +299,10 @@ proxima: conteudoProxima.value
 };
 
 if(aulaEditando !== null){
-aulas[aulaEditando] = aula;
+aulas[aulaEditando]=aula;
 aulaEditando=null;
-alert("Aula atualizada!");
 }else{
 aulas.push(aula);
-alert("Aula salva!");
 }
 
 conteudoAtual.value="";
@@ -298,14 +330,14 @@ ${a.data || ""}<br><br>
 <b>Próxima Aula:</b><br>${a.proxima || "-"}<br><br>
 
 <button class="small-btn" onclick="editarAula(${i})">✏️ Editar</button>
-<button class="small-btn" style="background:red" onclick="excluirAula(${i})">🗑️ Excluir</button>
+<button class="small-btn delete-btn" onclick="excluirAula(${i})">🗑️ Excluir</button>
 <button class="small-btn" onclick="usarProxima(${i})">🔄 Usar Próxima</button>
 </div>
 `).join("");
 }
 
 function editarAula(i){
-let a = aulas[i];
+let a=aulas[i];
 showSection('novaAula');
 professorSelect.value=a.professor;
 disciplinaSelect.value=a.disciplina;
@@ -317,7 +349,7 @@ aulaEditando=i;
 }
 
 function excluirAula(i){
-if(confirm("Deseja excluir esta aula?")){
+if(confirm("Excluir aula?")){
 aulas.splice(i,1);
 salvarStorage();
 renderAulas();
@@ -342,4 +374,3 @@ atualizarTudo();
 </script>
 </body>
 </html>
-
