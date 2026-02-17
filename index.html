@@ -1,402 +1,304 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Registro de Aulas</title>
+<title>Registro de Aulas Pro</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial, sans-serif;}
 
 body{
-background:linear-gradient(135deg,#1e3a8a,#dc2626);
-display:flex;
-justify-content:center;
-padding:20px;
-}
-
-/* LOGIN */
-.login{
-position:fixed;
-top:0;left:0;
-width:100%;height:100%;
-background:linear-gradient(135deg,#1e3a8a,#dc2626);
+background: linear-gradient(135deg,#5f6fd8,#8a4fd1);
+min-height:100vh;
 display:flex;
 justify-content:center;
 align-items:center;
-z-index:999;
 }
 
-.login-box{
-background:#fff;
-padding:30px;
-border-radius:20px;
-width:300px;
+.container{
+width:380px;
+background:#f1f1f1;
+border-radius:25px;
+overflow:hidden;
+box-shadow:0 20px 40px rgba(0,0,0,0.2);
+}
+
+.header{
+background: linear-gradient(135deg,#5f6fd8,#d84fa1);
+color:white;
+padding:40px 20px;
 text-align:center;
 }
 
-.login-box input{
+.header h1{
+font-size:32px;
+margin-bottom:10px;
+}
+
+.header p{
+opacity:0.9;
+}
+
+.content{
+padding:25px;
+}
+
+.button{
+width:100%;
+padding:18px;
+margin-bottom:18px;
+border:none;
+border-radius:40px;
+font-size:18px;
+color:white;
+cursor:pointer;
+box-shadow:0 8px 20px rgba(0,0,0,0.2);
+}
+
+.blue{background:#4b43c6;}
+.green{background:#19a66a;}
+
+.hidden{display:none;}
+
+input,select,textarea{
 width:100%;
 padding:10px;
-margin:8px 0;
+margin-bottom:10px;
 border-radius:8px;
 border:1px solid #ccc;
 }
 
-.login-box button{
-width:100%;
-padding:10px;
-background:#dc2626;
-color:#fff;
+.small-btn{
+background:#4b43c6;
+color:white;
 border:none;
-border-radius:10px;
+padding:6px 10px;
+border-radius:6px;
 cursor:pointer;
+margin-top:5px;
 }
 
-/* APP */
-.app{
-width:100%;
-max-width:430px;
-height:90vh;
-background:#fff;
-border-radius:30px;
-overflow:hidden;
-display:flex;
-flex-direction:column;
-box-shadow:0 25px 50px rgba(0,0,0,.4);
-}
-
-.header{
-background:linear-gradient(135deg,#1e3a8a,#dc2626);
-color:#fff;
-padding:20px;
-text-align:center;
-}
-
-.content{
-flex:1;
-overflow-y:auto;
-padding:18px;
-}
-
-.tela{display:none;}
-.tela.ativa{display:block;}
-
-input,select,textarea{
-width:100%;
-padding:12px;
-margin:6px 0;
-border-radius:10px;
-border:1px solid #cbd5e1;
-}
-
-textarea{resize:none;}
-
-.btn{
-width:100%;
-padding:12px;
-margin-top:8px;
-border:none;
-border-radius:12px;
-background:#dc2626;
-color:#fff;
-font-weight:600;
-cursor:pointer;
-}
-
-.card{
-background:#f1f5f9;
-padding:14px;
-border-radius:14px;
-margin:10px 0;
-box-shadow:0 6px 15px rgba(0,0,0,.15);
-font-size:14px;
-}
-
-.excluir{
-margin-top:8px;
+.logout{
+position:absolute;
+top:10px;
+right:10px;
+background:red;
+color:white;
 padding:6px 10px;
 border:none;
-border-radius:8px;
-background:#1e3a8a;
-color:#fff;
+border-radius:6px;
 cursor:pointer;
 }
 
-.mes{
-margin-top:15px;
-font-weight:bold;
-color:#1e3a8a;
-}
-
-.nav{
-display:flex;
-justify-content:space-around;
-background:#fff;
-border-top:2px solid #e2e8f0;
-padding:10px 0;
-}
-
-.nav button{
-background:none;
-border:none;
-font-size:12px;
-color:#1e3a8a;
-font-weight:600;
-cursor:pointer;
-}
-
-.nav button span{
-display:block;
-font-size:20px;
-}
 </style>
 </head>
-
 <body>
 
 <!-- LOGIN -->
-<div class="login" id="login">
-<div class="login-box">
-<h3>🔐 Login</h3>
-<input id="usuario" placeholder="Usuário">
-<input id="senha" type="password" placeholder="Senha">
-<button onclick="entrar()">Entrar</button>
-<p id="erroLogin" style="color:red;"></p>
+<div id="loginScreen" class="container">
+<div class="header">
+<h1>📘 Registro de Aulas Pro</h1>
+<p>Faça login para continuar</p>
 </div>
-</div>
-
-<div class="app" id="app">
-
-<div class="header">📘 Registro de Aulas</div>
-
 <div class="content">
+<input type="text" id="user" placeholder="Usuário">
+<input type="password" id="pass" placeholder="Senha">
+<button class="button blue" onclick="login()">Entrar</button>
+</div>
+</div>
 
-<!-- NOVA AULA -->
-<div id="aula" class="tela ativa">
-<h3>➕ Nova Aula</h3>
+<!-- APP -->
+<div id="app" class="container hidden">
+<button class="logout" onclick="logout()">Sair</button>
+
+<div class="header">
+<h1>📘 Registro de Aulas Pro</h1>
+<p>Professores • Disciplinas • Salas • Aulas</p>
+</div>
+
+<div class="content" id="home">
+
+<button class="button blue" onclick="showSection('professores')">👨‍🏫 Gerenciar Professores</button>
+<button class="button blue" onclick="showSection('disciplinas')">📚 Gerenciar Disciplinas</button>
+<button class="button blue" onclick="showSection('salas')">🏫 Gerenciar Salas</button>
+<button class="button green" onclick="showSection('novaAula')">➕ Nova Aula</button>
+<button class="button blue" onclick="showSection('minhasAulas')">📊 Minhas Aulas</button>
+
+</div>
+
+<div class="content hidden" id="professores">
+<h3>Professores</h3>
+<input id="novoProfessor" placeholder="Nome do professor">
+<button class="small-btn" onclick="addProfessor()">Adicionar</button>
+<ul id="listaProfessores"></ul>
+<button class="small-btn" onclick="voltar()">Voltar</button>
+</div>
+
+<div class="content hidden" id="disciplinas">
+<h3>Disciplinas</h3>
+<input id="novaDisciplina" placeholder="Nome da disciplina">
+<button class="small-btn" onclick="addDisciplina()">Adicionar</button>
+<ul id="listaDisciplinas"></ul>
+<button class="small-btn" onclick="voltar()">Voltar</button>
+</div>
+
+<div class="content hidden" id="salas">
+<h3>Salas</h3>
+<input id="novaSala" placeholder="Nome da sala">
+<button class="small-btn" onclick="addSala()">Adicionar</button>
+<ul id="listaSalas"></ul>
+<button class="small-btn" onclick="voltar()">Voltar</button>
+</div>
+
+<div class="content hidden" id="novaAula">
+<h3>Nova Aula</h3>
+<select id="professorSelect"></select>
+<select id="disciplinaSelect"></select>
+<select id="salaSelect"></select>
 <input type="date" id="dataAula">
-<select id="profAula"></select>
-<select id="discAula"></select>
-<select id="salaAula"></select>
-<textarea id="conteudoAula" placeholder="Conteúdo da Aula"></textarea>
-<textarea id="proximaAula" placeholder="Conteúdo da Próxima Aula"></textarea>
-<button class="btn" onclick="addAula()">Salvar Aula</button>
+<textarea id="conteudoAula" placeholder="Conteúdo da aula"></textarea>
+
+<label>
+<input type="checkbox" id="usarComoProxima">
+ Usar como próxima aula
+</label>
+
+<button class="small-btn" onclick="salvarAula()">Salvar Aula</button>
+<button class="small-btn" onclick="voltar()">Voltar</button>
 </div>
 
-<!-- LISTA -->
-<div id="lista" class="tela">
-<h3>📊 Minhas Aulas</h3>
+<div class="content hidden" id="minhasAulas">
+<h3>Minhas Aulas</h3>
+
 <input type="date" id="filtroData" onchange="renderAulas()">
-<select id="filtroProfessor" onchange="renderAulas()"></select>
-<select id="filtroSala" onchange="renderAulas()"></select>
+
 <div id="listaAulas"></div>
-</div>
 
-<!-- PROFESSORES -->
-<div id="prof" class="tela">
-<h3>👨‍🏫 Professores</h3>
-<input id="nomeProf" placeholder="Nome do Professor">
-<button class="btn" onclick="addProfessor()">Salvar</button>
-<div id="listaProf"></div>
-</div>
-
-<!-- DISCIPLINAS -->
-<div id="disc" class="tela">
-<h3>📚 Disciplinas</h3>
-<input id="nomeDisc" placeholder="Nome da Disciplina">
-<button class="btn" onclick="addDisciplina()">Salvar</button>
-<div id="listaDisc"></div>
-</div>
-
-<!-- SALAS -->
-<div id="sala" class="tela">
-<h3>🏫 Salas</h3>
-<input id="nomeSala" placeholder="Nome da Sala">
-<button class="btn" onclick="addSala()">Salvar</button>
-<div id="listaSala"></div>
-</div>
-
-</div>
-
-<div class="nav">
-<button onclick="abrir('aula')"><span>➕</span>Aula</button>
-<button onclick="abrir('lista')"><span>📊</span>Aulas</button>
-<button onclick="abrir('prof')"><span>👨‍🏫</span>Prof</button>
-<button onclick="abrir('disc')"><span>📚</span>Disc</button>
-<button onclick="abrir('sala')"><span>🏫</span>Salas</button>
+<button class="small-btn" onclick="voltar()">Voltar</button>
 </div>
 
 </div>
 
 <script>
+let professores=[],disciplinas=[],salas=[],aulas=[];
+let ultimaAtividade=Date.now();
 
-/* LOGIN */
-function entrar(){
-if(usuario.value==="admin" && senha.value==="1234"){
-login.style.display="none";
-resetTimer();
-}else{
-erroLogin.innerText="Usuário ou senha inválidos";
+function login(){
+if(user.value==="admin" && pass.value==="1234"){
+loginScreen.classList.add("hidden");
+app.classList.remove("hidden");
 }
 }
 
-/* BLOQUEIO */
-let timer;
-function resetTimer(){
-clearTimeout(timer);
-timer=setTimeout(()=>{login.style.display="flex";},60000);
-}
-document.addEventListener("click",resetTimer);
-document.addEventListener("keypress",resetTimer);
-
-/* DADOS */
-let professores=JSON.parse(localStorage.getItem("professores"))||[];
-let disciplinas=JSON.parse(localStorage.getItem("disciplinas"))||[];
-let salas=JSON.parse(localStorage.getItem("salas"))||[];
-let aulas=JSON.parse(localStorage.getItem("aulas"))||[];
-
-function salvar(){
-localStorage.setItem("professores",JSON.stringify(professores));
-localStorage.setItem("disciplinas",JSON.stringify(disciplinas));
-localStorage.setItem("salas",JSON.stringify(salas));
-localStorage.setItem("aulas",JSON.stringify(aulas));
+function logout(){
+location.reload();
 }
 
-function abrir(id){
-document.querySelectorAll(".tela").forEach(t=>t.classList.remove("ativa"));
-document.getElementById(id).classList.add("ativa");
-if(id==="aula") atualizarSelects();
-if(id==="lista"){ atualizarFiltros(); renderAulas(); }
+document.onclick=document.onmousemove=document.onkeypress=function(){
+ultimaAtividade=Date.now();
+};
+
+setInterval(()=>{
+if(Date.now()-ultimaAtividade>60000){
+logout();
+}
+},5000);
+
+function showSection(id){
+home.classList.add("hidden");
+document.querySelectorAll("#app .content").forEach(e=>e.classList.add("hidden"));
+document.getElementById(id).classList.remove("hidden");
+updateSelects();
+renderLists();
+renderAulas();
 }
 
-/* CADASTROS */
+function voltar(){
+document.querySelectorAll("#app .content").forEach(e=>e.classList.add("hidden"));
+home.classList.remove("hidden");
+}
+
 function addProfessor(){
-if(!nomeProf.value) return;
-professores.push({id:Date.now(),nome:nomeProf.value});
-nomeProf.value=""; salvar(); renderProf();
+if(novoProfessor.value){
+professores.push(novoProfessor.value);
+novoProfessor.value="";
+renderLists();
 }
+}
+
 function addDisciplina(){
-if(!nomeDisc.value) return;
-disciplinas.push({id:Date.now(),nome:nomeDisc.value});
-nomeDisc.value=""; salvar(); renderDisc();
+if(novaDisciplina.value){
+disciplinas.push(novaDisciplina.value);
+novaDisciplina.value="";
+renderLists();
 }
+}
+
 function addSala(){
-if(!nomeSala.value) return;
-salas.push({id:Date.now(),nome:nomeSala.value});
-nomeSala.value=""; salvar(); renderSala();
-}
-function renderProf(){
-listaProf.innerHTML="";
-professores.forEach((p,i)=>{
-listaProf.innerHTML+=`<div class="card">${p.nome}
-<button class="excluir" onclick="professores.splice(${i},1);salvar();renderProf();">Excluir</button></div>`;
-});
-}
-function renderDisc(){
-listaDisc.innerHTML="";
-disciplinas.forEach((d,i)=>{
-listaDisc.innerHTML+=`<div class="card">${d.nome}
-<button class="excluir" onclick="disciplinas.splice(${i},1);salvar();renderDisc();">Excluir</button></div>`;
-});
-}
-function renderSala(){
-listaSala.innerHTML="";
-salas.forEach((s,i)=>{
-listaSala.innerHTML+=`<div class="card">${s.nome}
-<button class="excluir" onclick="salas.splice(${i},1);salvar();renderSala();">Excluir</button></div>`;
-});
-}
-
-/* SELECTS */
-function atualizarSelects(){
-profAula.innerHTML="";
-discAula.innerHTML="";
-salaAula.innerHTML="";
-professores.forEach(p=> profAula.innerHTML+=`<option value="${p.id}">${p.nome}</option>`);
-disciplinas.forEach(d=> discAula.innerHTML+=`<option value="${d.id}">${d.nome}</option>`);
-salas.forEach(s=> salaAula.innerHTML+=`<option value="${s.id}">${s.nome}</option>`);
-}
-
-/* NOVA AULA */
-function addAula(){
-if(!dataAula.value) return;
-
-if(aulas.length>0){
-let ultima=aulas[aulas.length-1];
-if(ultima.proxima){
-conteudoAula.value=ultima.proxima;
+if(novaSala.value){
+salas.push(novaSala.value);
+novaSala.value="";
+renderLists();
 }
 }
 
-aulas.push({
-id:Date.now(),
+function renderLists(){
+listaProfessores.innerHTML=professores.map(p=>"<li>"+p+"</li>").join("");
+listaDisciplinas.innerHTML=disciplinas.map(d=>"<li>"+d+"</li>").join("");
+listaSalas.innerHTML=salas.map(s=>"<li>"+s+"</li>").join("");
+}
+
+function updateSelects(){
+professorSelect.innerHTML=professores.map(p=>"<option>"+p+"</option>").join("");
+disciplinaSelect.innerHTML=disciplinas.map(d=>"<option>"+d+"</option>").join("");
+salaSelect.innerHTML=salas.map(s=>"<option>"+s+"</option>").join("");
+}
+
+function salvarAula(){
+let aula={
+professor:professorSelect.value,
+disciplina:disciplinaSelect.value,
+sala:salaSelect.value,
 data:dataAula.value,
-prof:profAula.value,
-disc:discAula.value,
-sala:salaAula.value,
 conteudo:conteudoAula.value,
-proxima:proximaAula.value
-});
+proxima:usarComoProxima.checked
+};
 
-salvar();
-dataAula.value="";
+aulas.push(aula);
+
+if(usarComoProxima.checked){
+aulas.forEach(a=>{if(a!==aula)a.proxima=false});
+}
+
 conteudoAula.value="";
-proximaAula.value="";
-renderAulas();
+usarComoProxima.checked=false;
+
+alert("Aula salva!");
 }
 
-/* FILTROS */
-function atualizarFiltros(){
-filtroProfessor.innerHTML="<option value=''>Todos Professores</option>";
-filtroSala.innerHTML="<option value=''>Todas Salas</option>";
-professores.forEach(p=> filtroProfessor.innerHTML+=`<option value="${p.id}">${p.nome}</option>`);
-salas.forEach(s=> filtroSala.innerHTML+=`<option value="${s.id}">${s.nome}</option>`);
-}
-
-/* LISTA */
 function renderAulas(){
-listaAulas.innerHTML="";
-let fd=filtroData.value;
-let fp=filtroProfessor.value;
-let fs=filtroSala.value;
+let filtro=filtroData.value;
+let lista=aulas.filter(a=>!filtro || a.data===filtro);
 
-let ordenadas=[...aulas].sort((a,b)=>new Date(b.data)-new Date(a.data));
-let mesAtual="";
-
-ordenadas.forEach((a,i)=>{
-if((!fd||a.data===fd)&&(!fp||a.prof===fp)&&(!fs||a.sala===fs)){
-let mes=new Date(a.data).toLocaleString("pt-BR",{month:"long",year:"numeric"});
-if(mes!==mesAtual){
-mesAtual=mes;
-listaAulas.innerHTML+=`<div class="mes">${mes.toUpperCase()}</div>`;
-}
-let p=professores.find(x=>x.id==a.prof);
-let d=disciplinas.find(x=>x.id==a.disc);
-let s=salas.find(x=>x.id==a.sala);
-
-listaAulas.innerHTML+=`
-<div class="card">
-📅 ${a.data}<br>
-🏫 ${s?s.nome:""}<br>
-👨‍🏫 ${p?p.nome:""}<br>
-📚 ${d?d.nome:""}<br>
-📝 ${a.conteudo}<br>
-➡️ Próxima Aula: ${a.proxima||"-"}
-<button class="excluir" onclick="aulas.splice(${i},1);salvar();renderAulas();">Excluir</button>
-</div>`;
-}
-});
+listaAulas.innerHTML=lista.map(a=>`
+<div style="background:white;padding:10px;margin-bottom:10px;border-radius:10px;">
+<strong>${a.professor}</strong><br>
+${a.disciplina} - ${a.sala}<br>
+${a.data}<br>
+Conteúdo: ${a.conteudo}<br>
+${a.proxima?"<span style='color:green;'>Próxima Aula</span>":""}
+<button class="small-btn" onclick="definirProxima(${aulas.indexOf(a)})">Usar como próxima aula</button>
+</div>
+`).join("");
 }
 
-/* INICIALIZAR */
-renderProf();
-renderDisc();
-renderSala();
-atualizarSelects();
+function definirProxima(index){
+aulas.forEach(a=>a.proxima=false);
+aulas[index].proxima=true;
 renderAulas();
+}
 
 </script>
-
 </body>
 </html>
