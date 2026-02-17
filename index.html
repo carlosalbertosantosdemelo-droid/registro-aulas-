@@ -6,7 +6,7 @@
 <title>Registro de Aulas</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI, Arial;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI;}
 
 body{
 background:linear-gradient(135deg,#1e3a8a,#dc2626);
@@ -31,8 +31,6 @@ padding:22px;
 text-align:center;
 }
 
-.header h1{font-size:20px;}
-
 .content{padding:18px;}
 
 .tela{display:none;}
@@ -47,11 +45,8 @@ border-radius:14px;
 background:linear-gradient(135deg,#1e3a8a,#dc2626);
 color:#fff;
 font-weight:600;
-font-size:15px;
 cursor:pointer;
 }
-
-.menu button:hover{opacity:.9;}
 
 input,select,textarea{
 width:100%;
@@ -59,7 +54,6 @@ padding:12px;
 margin:6px 0;
 border-radius:10px;
 border:1px solid #cbd5e1;
-font-size:14px;
 }
 
 textarea{resize:none;}
@@ -83,8 +77,8 @@ background:#f1f5f9;
 padding:14px;
 border-radius:14px;
 margin:10px 0;
-font-size:14px;
 box-shadow:0 6px 15px rgba(0,0,0,.15);
+font-size:14px;
 }
 
 .excluir{
@@ -111,7 +105,7 @@ margin-bottom:10px;
 <div class="app">
 
 <div class="header">
-<h1>📘 Registro de Aulas</h1>
+<h2>📘 Registro de Aulas</h2>
 </div>
 
 <div class="content">
@@ -125,60 +119,19 @@ margin-bottom:10px;
 <button onclick="abrir('lista')">📊 Minhas Aulas</button>
 </div>
 
-<!-- PROFESSORES -->
-<div id="prof" class="tela">
-<h3>👨‍🏫 Professores</h3>
-<input id="nomeProf" placeholder="Nome do professor">
-<button class="btn" onclick="addProfessor()">Salvar</button>
-<div id="listaProf"></div>
-<button class="btn voltar" onclick="voltar()">Voltar</button>
-</div>
-
-<!-- DISCIPLINAS -->
-<div id="disc" class="tela">
-<h3>📚 Disciplinas</h3>
-<input id="nomeDisc" placeholder="Nome da disciplina">
-<button class="btn" onclick="addDisciplina()">Salvar</button>
-<div id="listaDisc"></div>
-<button class="btn voltar" onclick="voltar()">Voltar</button>
-</div>
-
-<!-- SALAS -->
-<div id="sala" class="tela">
-<h3>🏫 Salas</h3>
-<input id="nomeSala" placeholder="Ex: 1º Ano A">
-<button class="btn" onclick="addSala()">Salvar</button>
-<div id="listaSala"></div>
-<button class="btn voltar" onclick="voltar()">Voltar</button>
-</div>
-
-<!-- NOVA AULA -->
-<div id="aula" class="tela">
-<h3>➕ Nova Aula</h3>
-
-<select id="professor"></select>
-<select id="disciplina"></select>
-<select id="salaSel"></select>
-
-<input type="date" id="data">
-<textarea id="conteudo" rows="3" placeholder="Conteúdo da aula"></textarea>
-<textarea id="prox" rows="2" placeholder="Próxima aula"></textarea>
-
-<button class="btn" onclick="addAula()">Registrar Aula</button>
-<button class="btn voltar" onclick="voltar()">Voltar</button>
-</div>
-
 <!-- LISTA AULAS -->
 <div id="lista" class="tela">
 <h3>📊 Minhas Aulas</h3>
 
 <div class="filtro">
-Filtrar por data:
+Filtrar por Data:
 <input type="date" id="filtroData" onchange="renderAulas()">
+
+Filtrar por Sala:
+<select id="filtroSala" onchange="renderAulas()"></select>
 </div>
 
 <div id="listaAulas"></div>
-
 <button class="btn voltar" onclick="voltar()">Voltar</button>
 </div>
 
@@ -186,6 +139,7 @@ Filtrar por data:
 </div>
 
 <script>
+
 let professores = JSON.parse(localStorage.getItem("professores")) || [];
 let disciplinas = JSON.parse(localStorage.getItem("disciplinas")) || [];
 let salas = JSON.parse(localStorage.getItem("salas")) || [];
@@ -201,8 +155,7 @@ localStorage.setItem("aulas",JSON.stringify(aulas));
 function abrir(id){
 document.querySelectorAll(".tela").forEach(t=>t.classList.remove("ativa"));
 document.getElementById(id).classList.add("ativa");
-if(id==="aula") atualizarSelects();
-if(id==="lista") renderAulas();
+if(id==="lista"){ atualizarFiltroSala(); renderAulas(); }
 }
 
 function voltar(){
@@ -210,107 +163,51 @@ document.querySelectorAll(".tela").forEach(t=>t.classList.remove("ativa"));
 menu.classList.add("ativa");
 }
 
-/* CADASTROS */
-function addProfessor(){
-if(!nomeProf.value.trim()) return;
-professores.push({id:Date.now(),nome:nomeProf.value});
-nomeProf.value="";
-salvar(); renderProf();
-}
-
-function addDisciplina(){
-if(!nomeDisc.value.trim()) return;
-disciplinas.push({id:Date.now(),nome:nomeDisc.value});
-nomeDisc.value="";
-salvar(); renderDisc();
-}
-
-function addSala(){
-if(!nomeSala.value.trim()) return;
-salas.push({id:Date.now(),nome:nomeSala.value});
-nomeSala.value="";
-salvar(); renderSala();
-}
-
-/* RENDERS */
-function renderProf(){
-listaProf.innerHTML="";
-professores.forEach((p,i)=>{
-listaProf.innerHTML+=`<div class="card">${p.nome}
-<button class="excluir" onclick="professores.splice(${i},1);salvar();renderProf();">Excluir</button></div>`;
+/* FILTRO SALA */
+function atualizarFiltroSala(){
+let select=document.getElementById("filtroSala");
+select.innerHTML="<option value=''>Todas as Salas</option>";
+salas.forEach(s=>{
+select.innerHTML+=`<option value="${s.id}">${s.nome}</option>`;
 });
 }
 
-function renderDisc(){
-listaDisc.innerHTML="";
-disciplinas.forEach((d,i)=>{
-listaDisc.innerHTML+=`<div class="card">${d.nome}
-<button class="excluir" onclick="disciplinas.splice(${i},1);salvar();renderDisc();">Excluir</button></div>`;
-});
-}
-
-function renderSala(){
-listaSala.innerHTML="";
-salas.forEach((s,i)=>{
-listaSala.innerHTML+=`<div class="card">${s.nome}
-<button class="excluir" onclick="salas.splice(${i},1);salvar();renderSala();">Excluir</button></div>`;
-});
-}
-
-function atualizarSelects(){
-professor.innerHTML=professores.map(p=>`<option value="${p.id}">${p.nome}</option>`).join("");
-disciplina.innerHTML=disciplinas.map(d=>`<option value="${d.id}">${d.nome}</option>`).join("");
-salaSel.innerHTML=salas.map(s=>`<option value="${s.id}">${s.nome}</option>`).join("");
-}
-
-/* AULAS */
-function addAula(){
-if(!data.value) return;
-
-aulas.push({
-data:data.value,
-prof:professor.value,
-disc:disciplina.value,
-sala:salaSel.value,
-conteudo:conteudo.value,
-prox:prox.value
-});
-
-salvar();
-
-/* LIMPA TUDO */
-data.value="";
-conteudo.value="";
-prox.value="";
-professor.selectedIndex=0;
-disciplina.selectedIndex=0;
-salaSel.selectedIndex=0;
-
-alert("Aula registrada com sucesso!");
-}
-
+/* RENDER AULAS COM ORDENAÇÃO */
 function renderAulas(){
-listaAulas.innerHTML="";
-aulas.forEach((a,i)=>{
-if(!filtroData.value || filtroData.value===a.data){
+
+let lista=document.getElementById("listaAulas");
+lista.innerHTML="";
+
+let filtroData=document.getElementById("filtroData").value;
+let filtroSala=document.getElementById("filtroSala").value;
+
+/* ORDENAR POR DATA (mais recente primeiro) */
+let aulasOrdenadas=[...aulas].sort((a,b)=> new Date(b.data)-new Date(a.data));
+
+aulasOrdenadas.forEach((a,i)=>{
+
+if(
+(!filtroData || a.data===filtroData) &&
+(!filtroSala || a.sala===filtroSala)
+){
+
 let p=professores.find(x=>x.id==a.prof);
 let d=disciplinas.find(x=>x.id==a.disc);
 let s=salas.find(x=>x.id==a.sala);
 
-listaAulas.innerHTML+=`<div class="card">
-📅 ${a.data}<br>
+lista.innerHTML+=`
+<div class="card">
+📅 <strong>${a.data}</strong><br>
+🏫 ${s?s.nome:""}<br>
 👨‍🏫 ${p?p.nome:""}<br>
 📚 ${d?d.nome:""}<br>
-🏫 ${s?s.nome:""}<br>
 📝 ${a.conteudo}<br>
-🔁 Próxima: ${a.prox||"-"}
-<button class="excluir" onclick="aulas.splice(${i},1);salvar();renderAulas();">Excluir</button>
 </div>`;
 }
 });
+
 }
 
-renderProf(); renderDisc(); renderSala();
 </script>
 
 </body>
