@@ -15,27 +15,45 @@ justify-content:center;
 padding:20px;
 }
 
-/* SPLASH SCREEN */
-.splash{
+/* LOGIN */
+.login{
 position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
+top:0;left:0;
+width:100%;height:100%;
 background:linear-gradient(135deg,#1e3a8a,#dc2626);
 display:flex;
-flex-direction:column;
 justify-content:center;
 align-items:center;
-color:#fff;
 z-index:999;
 }
 
-.splash img{
-width:120px;
-margin-bottom:20px;
+.login-box{
+background:#fff;
+padding:30px;
+border-radius:20px;
+width:300px;
+text-align:center;
 }
 
+.login-box input{
+width:100%;
+padding:10px;
+margin:8px 0;
+border-radius:8px;
+border:1px solid #ccc;
+}
+
+.login-box button{
+width:100%;
+padding:10px;
+background:#dc2626;
+color:#fff;
+border:none;
+border-radius:10px;
+cursor:pointer;
+}
+
+/* APP */
 .app{
 width:100%;
 max-width:430px;
@@ -43,7 +61,7 @@ height:90vh;
 background:#fff;
 border-radius:30px;
 overflow:hidden;
-display:none;
+display:flex;
 flex-direction:column;
 box-shadow:0 25px 50px rgba(0,0,0,.4);
 }
@@ -53,7 +71,6 @@ background:linear-gradient(135deg,#1e3a8a,#dc2626);
 color:#fff;
 padding:20px;
 text-align:center;
-font-weight:600;
 }
 
 .content{
@@ -115,7 +132,7 @@ color:#1e3a8a;
 .nav{
 display:flex;
 justify-content:space-around;
-background:#ffffff;
+background:#fff;
 border-top:2px solid #e2e8f0;
 padding:10px 0;
 }
@@ -124,7 +141,6 @@ padding:10px 0;
 background:none;
 border:none;
 font-size:12px;
-text-align:center;
 color:#1e3a8a;
 font-weight:600;
 cursor:pointer;
@@ -139,18 +155,20 @@ font-size:20px;
 
 <body>
 
-<!-- TELA INICIAL -->
-<div class="splash" id="splash">
-<img src="https://via.placeholder.com/120x120.png?text=LOGO" alt="Logo Escola">
-<h2>Nome da Escola</h2>
-<p>Registro de Aulas</p>
+<!-- LOGIN -->
+<div class="login" id="login">
+<div class="login-box">
+<h3>🔐 Login</h3>
+<input id="usuario" placeholder="Usuário">
+<input id="senha" type="password" placeholder="Senha">
+<button onclick="entrar()">Entrar</button>
+<p id="erroLogin" style="color:red;"></p>
+</div>
 </div>
 
 <div class="app" id="app">
 
-<div class="header">
-📘 Registro de Aulas
-</div>
+<div class="header">📘 Registro de Aulas</div>
 
 <div class="content">
 
@@ -169,11 +187,9 @@ font-size:20px;
 <!-- LISTA -->
 <div id="lista" class="tela">
 <h3>📊 Minhas Aulas</h3>
-
 <input type="date" id="filtroData" onchange="renderAulas()">
 <select id="filtroProfessor" onchange="renderAulas()"></select>
 <select id="filtroSala" onchange="renderAulas()"></select>
-
 <div id="listaAulas"></div>
 </div>
 
@@ -215,17 +231,30 @@ font-size:20px;
 
 <script>
 
-/* SPLASH */
-setTimeout(()=>{
-document.getElementById("splash").style.display="none";
-document.getElementById("app").style.display="flex";
-},3000);
+/* LOGIN */
+function entrar(){
+if(usuario.value==="admin" && senha.value==="1234"){
+login.style.display="none";
+resetTimer();
+}else{
+erroLogin.innerText="Usuário ou senha inválidos";
+}
+}
+
+/* BLOQUEIO */
+let timer;
+function resetTimer(){
+clearTimeout(timer);
+timer=setTimeout(()=>{login.style.display="flex";},60000);
+}
+document.addEventListener("click",resetTimer);
+document.addEventListener("keypress",resetTimer);
 
 /* DADOS */
-let professores = JSON.parse(localStorage.getItem("professores")) || [];
-let disciplinas = JSON.parse(localStorage.getItem("disciplinas")) || [];
-let salas = JSON.parse(localStorage.getItem("salas")) || [];
-let aulas = JSON.parse(localStorage.getItem("aulas")) || [];
+let professores=JSON.parse(localStorage.getItem("professores"))||[];
+let disciplinas=JSON.parse(localStorage.getItem("disciplinas"))||[];
+let salas=JSON.parse(localStorage.getItem("salas"))||[];
+let aulas=JSON.parse(localStorage.getItem("aulas"))||[];
 
 function salvar(){
 localStorage.setItem("professores",JSON.stringify(professores));
@@ -242,31 +271,21 @@ if(id==="lista"){ atualizarFiltros(); renderAulas(); }
 }
 
 /* CADASTROS */
-
 function addProfessor(){
 if(!nomeProf.value) return;
 professores.push({id:Date.now(),nome:nomeProf.value});
-nomeProf.value="";
-salvar();
-renderProf();
+nomeProf.value=""; salvar(); renderProf();
 }
-
 function addDisciplina(){
 if(!nomeDisc.value) return;
 disciplinas.push({id:Date.now(),nome:nomeDisc.value});
-nomeDisc.value="";
-salvar();
-renderDisc();
+nomeDisc.value=""; salvar(); renderDisc();
 }
-
 function addSala(){
 if(!nomeSala.value) return;
 salas.push({id:Date.now(),nome:nomeSala.value});
-nomeSala.value="";
-salvar();
-renderSala();
+nomeSala.value=""; salvar(); renderSala();
 }
-
 function renderProf(){
 listaProf.innerHTML="";
 professores.forEach((p,i)=>{
@@ -274,7 +293,6 @@ listaProf.innerHTML+=`<div class="card">${p.nome}
 <button class="excluir" onclick="professores.splice(${i},1);salvar();renderProf();">Excluir</button></div>`;
 });
 }
-
 function renderDisc(){
 listaDisc.innerHTML="";
 disciplinas.forEach((d,i)=>{
@@ -282,7 +300,6 @@ listaDisc.innerHTML+=`<div class="card">${d.nome}
 <button class="excluir" onclick="disciplinas.splice(${i},1);salvar();renderDisc();">Excluir</button></div>`;
 });
 }
-
 function renderSala(){
 listaSala.innerHTML="";
 salas.forEach((s,i)=>{
@@ -292,7 +309,6 @@ listaSala.innerHTML+=`<div class="card">${s.nome}
 }
 
 /* SELECTS */
-
 function atualizarSelects(){
 profAula.innerHTML="";
 discAula.innerHTML="";
@@ -302,8 +318,35 @@ disciplinas.forEach(d=> discAula.innerHTML+=`<option value="${d.id}">${d.nome}</
 salas.forEach(s=> salaAula.innerHTML+=`<option value="${s.id}">${s.nome}</option>`);
 }
 
-/* FILTROS */
+/* NOVA AULA */
+function addAula(){
+if(!dataAula.value) return;
 
+if(aulas.length>0){
+let ultima=aulas[aulas.length-1];
+if(ultima.proxima){
+conteudoAula.value=ultima.proxima;
+}
+}
+
+aulas.push({
+id:Date.now(),
+data:dataAula.value,
+prof:profAula.value,
+disc:discAula.value,
+sala:salaAula.value,
+conteudo:conteudoAula.value,
+proxima:proximaAula.value
+});
+
+salvar();
+dataAula.value="";
+conteudoAula.value="";
+proximaAula.value="";
+renderAulas();
+}
+
+/* FILTROS */
 function atualizarFiltros(){
 filtroProfessor.innerHTML="<option value=''>Todos Professores</option>";
 filtroSala.innerHTML="<option value=''>Todas Salas</option>";
@@ -311,20 +354,19 @@ professores.forEach(p=> filtroProfessor.innerHTML+=`<option value="${p.id}">${p.
 salas.forEach(s=> filtroSala.innerHTML+=`<option value="${s.id}">${s.nome}</option>`);
 }
 
+/* LISTA */
 function renderAulas(){
 listaAulas.innerHTML="";
 let fd=filtroData.value;
 let fp=filtroProfessor.value;
 let fs=filtroSala.value;
 
-let ordenadas=[...aulas].sort((a,b)=> new Date(b.data)-new Date(a.data));
-
+let ordenadas=[...aulas].sort((a,b)=>new Date(b.data)-new Date(a.data));
 let mesAtual="";
 
 ordenadas.forEach((a,i)=>{
 if((!fd||a.data===fd)&&(!fp||a.prof===fp)&&(!fs||a.sala===fs)){
-let dataObj=new Date(a.data);
-let mes=dataObj.toLocaleString("pt-BR",{month:"long",year:"numeric"});
+let mes=new Date(a.data).toLocaleString("pt-BR",{month:"long",year:"numeric"});
 if(mes!==mesAtual){
 mesAtual=mes;
 listaAulas.innerHTML+=`<div class="mes">${mes.toUpperCase()}</div>`;
@@ -332,6 +374,7 @@ listaAulas.innerHTML+=`<div class="mes">${mes.toUpperCase()}</div>`;
 let p=professores.find(x=>x.id==a.prof);
 let d=disciplinas.find(x=>x.id==a.disc);
 let s=salas.find(x=>x.id==a.sala);
+
 listaAulas.innerHTML+=`
 <div class="card">
 📅 ${a.data}<br>
@@ -339,7 +382,7 @@ listaAulas.innerHTML+=`
 👨‍🏫 ${p?p.nome:""}<br>
 📚 ${d?d.nome:""}<br>
 📝 ${a.conteudo}<br>
-➡️ <strong>Próxima Aula:</strong> ${a.proxima||"-"}
+➡️ Próxima Aula: ${a.proxima||"-"}
 <button class="excluir" onclick="aulas.splice(${i},1);salvar();renderAulas();">Excluir</button>
 </div>`;
 }
@@ -351,6 +394,7 @@ renderProf();
 renderDisc();
 renderSala();
 atualizarSelects();
+renderAulas();
 
 </script>
 
