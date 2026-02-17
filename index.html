@@ -1,213 +1,208 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Registro de Aulas</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI;}
-
 body{
-background:linear-gradient(135deg,#1e3a8a,#dc2626);
-display:flex;
-justify-content:center;
-padding:20px;
+    font-family: Arial, sans-serif;
+    background:#f2f4f8;
+    padding:20px;
 }
 
-.app{
-width:100%;
-max-width:420px;
-background:#fff;
-border-radius:28px;
-overflow:hidden;
-box-shadow:0 25px 50px rgba(0,0,0,.4);
+h2{
+    text-align:center;
 }
-
-.header{
-background:linear-gradient(135deg,#1e3a8a,#dc2626);
-color:#fff;
-padding:22px;
-text-align:center;
-}
-
-.content{padding:18px;}
-
-.tela{display:none;}
-.tela.ativa{display:block;}
-
-.menu button{
-width:100%;
-padding:14px;
-margin:7px 0;
-border:none;
-border-radius:14px;
-background:linear-gradient(135deg,#1e3a8a,#dc2626);
-color:#fff;
-font-weight:600;
-cursor:pointer;
-}
-
-input,select,textarea{
-width:100%;
-padding:12px;
-margin:6px 0;
-border-radius:10px;
-border:1px solid #cbd5e1;
-}
-
-textarea{resize:none;}
-
-.btn{
-width:100%;
-padding:12px;
-margin-top:8px;
-border:none;
-border-radius:12px;
-background:#dc2626;
-color:#fff;
-font-weight:600;
-cursor:pointer;
-}
-
-.btn.voltar{background:#1e3a8a;}
 
 .card{
-background:#f1f5f9;
-padding:14px;
-border-radius:14px;
-margin:10px 0;
-box-shadow:0 6px 15px rgba(0,0,0,.15);
-font-size:14px;
+    background:#ffffff;
+    padding:15px;
+    margin-bottom:20px;
+    border-radius:10px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.08);
 }
 
-.excluir{
-margin-top:6px;
-padding:6px 10px;
-border:none;
-border-radius:8px;
-background:#1e3a8a;
-color:#fff;
-cursor:pointer;
+input, select, button{
+    width:100%;
+    padding:8px;
+    margin-top:6px;
+    border-radius:6px;
+    border:1px solid #ccc;
 }
 
-.filtro{
-background:#e2e8f0;
-padding:10px;
-border-radius:10px;
-margin-bottom:10px;
+button{
+    background:#1976d2;
+    color:white;
+    border:none;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#0d47a1;
+}
+
+table{
+    width:100%;
+    border-collapse: collapse;
+    margin-top:10px;
+}
+
+th, td{
+    padding:8px;
+    border-bottom:1px solid #ddd;
+}
+
+th{
+    background:#1976d2;
+    color:white;
 }
 </style>
 </head>
 
 <body>
 
-<div class="app">
-
-<div class="header">
 <h2>📘 Registro de Aulas</h2>
+
+<div class="card">
+<h3>Nova Aula</h3>
+
+<input type="date" id="data">
+<input type="text" id="professor" placeholder="Professor">
+<input type="text" id="sala" placeholder="Sala">
+<input type="text" id="conteudo" placeholder="Conteúdo">
+
+<button id="btnSalvar">Salvar Aula</button>
 </div>
 
-<div class="content">
+<div class="card">
+<h3>Filtros</h3>
 
-<!-- MENU -->
-<div id="menu" class="tela ativa menu">
-<button onclick="abrir('prof')">👨‍🏫 Professores</button>
-<button onclick="abrir('disc')">📚 Disciplinas</button>
-<button onclick="abrir('sala')">🏫 Salas</button>
-<button onclick="abrir('aula')">➕ Nova Aula</button>
-<button onclick="abrir('lista')">📊 Minhas Aulas</button>
-</div>
+<select id="filtroMes">
+<option value="">Todos os Meses</option>
+</select>
 
-<!-- LISTA AULAS -->
-<div id="lista" class="tela">
-<h3>📊 Minhas Aulas</h3>
-
-<div class="filtro">
-Filtrar por Data:
-<input type="date" id="filtroData" onchange="renderAulas()">
-
-Filtrar por Sala:
-<select id="filtroSala" onchange="renderAulas()"></select>
-</div>
-
-<div id="listaAulas"></div>
-<button class="btn voltar" onclick="voltar()">Voltar</button>
-</div>
+<select id="filtroProfessor">
+<option value="">Todos os Professores</option>
+</select>
 
 </div>
+
+<div class="card">
+<h3>Lista de Aulas</h3>
+
+<table>
+<thead>
+<tr>
+<th>Data</th>
+<th>Mês</th>
+<th>Professor</th>
+<th>Sala</th>
+<th>Conteúdo</th>
+</tr>
+</thead>
+<tbody id="lista"></tbody>
+</table>
+
 </div>
 
 <script>
 
-let professores = JSON.parse(localStorage.getItem("professores")) || [];
-let disciplinas = JSON.parse(localStorage.getItem("disciplinas")) || [];
-let salas = JSON.parse(localStorage.getItem("salas")) || [];
+document.addEventListener("DOMContentLoaded", function(){
+
 let aulas = JSON.parse(localStorage.getItem("aulas")) || [];
 
+const btnSalvar = document.getElementById("btnSalvar");
+const filtroMes = document.getElementById("filtroMes");
+const filtroProfessor = document.getElementById("filtroProfessor");
+const lista = document.getElementById("lista");
+
+btnSalvar.addEventListener("click", salvar);
+filtroMes.addEventListener("change", mostrar);
+filtroProfessor.addEventListener("change", mostrar);
+
 function salvar(){
-localStorage.setItem("professores",JSON.stringify(professores));
-localStorage.setItem("disciplinas",JSON.stringify(disciplinas));
-localStorage.setItem("salas",JSON.stringify(salas));
-localStorage.setItem("aulas",JSON.stringify(aulas));
+
+let data = document.getElementById("data").value;
+let professor = document.getElementById("professor").value.trim();
+let sala = document.getElementById("sala").value.trim();
+let conteudo = document.getElementById("conteudo").value.trim();
+
+if(!data || !professor || !sala || !conteudo){
+alert("Preencha todos os campos.");
+return;
 }
 
-function abrir(id){
-document.querySelectorAll(".tela").forEach(t=>t.classList.remove("ativa"));
-document.getElementById(id).classList.add("ativa");
-if(id==="lista"){ atualizarFiltroSala(); renderAulas(); }
+let dataObj = new Date(data);
+let mes = dataObj.toLocaleString("pt-BR",{month:"long"});
+
+aulas.push({data, mes, professor, sala, conteudo});
+
+localStorage.setItem("aulas", JSON.stringify(aulas));
+
+document.getElementById("data").value="";
+document.getElementById("professor").value="";
+document.getElementById("sala").value="";
+document.getElementById("conteudo").value="";
+
+atualizarFiltros();
+mostrar();
 }
 
-function voltar(){
-document.querySelectorAll(".tela").forEach(t=>t.classList.remove("ativa"));
-menu.classList.add("ativa");
-}
+function atualizarFiltros(){
 
-/* FILTRO SALA */
-function atualizarFiltroSala(){
-let select=document.getElementById("filtroSala");
-select.innerHTML="<option value=''>Todas as Salas</option>";
-salas.forEach(s=>{
-select.innerHTML+=`<option value="${s.id}">${s.nome}</option>`;
+filtroMes.innerHTML = '<option value="">Todos os Meses</option>';
+filtroProfessor.innerHTML = '<option value="">Todos os Professores</option>';
+
+let meses = [...new Set(aulas.map(a=>a.mes))];
+let professores = [...new Set(aulas.map(a=>a.professor))];
+
+meses.forEach(m=>{
+let op = document.createElement("option");
+op.value = m;
+op.textContent = m;
+filtroMes.appendChild(op);
 });
-}
 
-/* RENDER AULAS COM ORDENAÇÃO */
-function renderAulas(){
-
-let lista=document.getElementById("listaAulas");
-lista.innerHTML="";
-
-let filtroData=document.getElementById("filtroData").value;
-let filtroSala=document.getElementById("filtroSala").value;
-
-/* ORDENAR POR DATA (mais recente primeiro) */
-let aulasOrdenadas=[...aulas].sort((a,b)=> new Date(b.data)-new Date(a.data));
-
-aulasOrdenadas.forEach((a,i)=>{
-
-if(
-(!filtroData || a.data===filtroData) &&
-(!filtroSala || a.sala===filtroSala)
-){
-
-let p=professores.find(x=>x.id==a.prof);
-let d=disciplinas.find(x=>x.id==a.disc);
-let s=salas.find(x=>x.id==a.sala);
-
-lista.innerHTML+=`
-<div class="card">
-📅 <strong>${a.data}</strong><br>
-🏫 ${s?s.nome:""}<br>
-👨‍🏫 ${p?p.nome:""}<br>
-📚 ${d?d.nome:""}<br>
-📝 ${a.conteudo}<br>
-</div>`;
-}
+professores.forEach(p=>{
+let op = document.createElement("option");
+op.value = p;
+op.textContent = p;
+filtroProfessor.appendChild(op);
 });
 
 }
 
+function mostrar(){
+
+lista.innerHTML = "";
+
+let filtradas = aulas.filter(a=>
+(filtroMes.value==="" || a.mes===filtroMes.value) &&
+(filtroProfessor.value==="" || a.professor===filtroProfessor.value)
+);
+
+filtradas.sort((a,b)=> new Date(a.data) - new Date(b.data));
+
+filtradas.forEach(a=>{
+lista.innerHTML += `
+<tr>
+<td>${new Date(a.data).toLocaleDateString("pt-BR")}</td>
+<td>${a.mes}</td>
+<td>${a.professor}</td>
+<td>${a.sala}</td>
+<td>${a.conteudo}</td>
+</tr>
+`;
+});
+
+}
+
+atualizarFiltros();
+mostrar();
+
+});
 </script>
 
 </body>
