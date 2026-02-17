@@ -7,46 +7,90 @@
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
+
 body{
 background: linear-gradient(135deg,#5f6fd8,#8a4fd1);
-display:flex;justify-content:center;align-items:center;
+display:flex;
+justify-content:center;
+align-items:center;
 min-height:100vh;
 }
+
 .container{
-width:390px;background:#f1f1f1;border-radius:25px;
-overflow:hidden;box-shadow:0 20px 40px rgba(0,0,0,0.2);
+width:390px;
+background:#f1f1f1;
+border-radius:25px;
+overflow:hidden;
+box-shadow:0 20px 40px rgba(0,0,0,0.2);
 position:relative;
 }
+
 .header{
 background: linear-gradient(135deg,#5f6fd8,#d84fa1);
-color:white;padding:40px 20px;text-align:center;
+color:white;
+padding:35px 20px;
+text-align:center;
 }
-.content{padding:25px;}
+
+.content{padding:20px;}
+
 .button{
-width:100%;padding:18px;margin-bottom:15px;
-border:none;border-radius:40px;font-size:17px;
-color:white;cursor:pointer;
+width:100%;
+padding:15px;
+margin-bottom:12px;
+border:none;
+border-radius:40px;
+font-size:16px;
+color:white;
+cursor:pointer;
 box-shadow:0 8px 20px rgba(0,0,0,0.2);
 }
+
 .blue{background:#4b43c6;}
 .green{background:#19a66a;}
+
 input,select,textarea{
-width:100%;padding:10px;margin-bottom:10px;
-border-radius:8px;border:1px solid #ccc;
+width:100%;
+padding:10px;
+margin-bottom:10px;
+border-radius:8px;
+border:1px solid #ccc;
 }
-textarea{resize:none;height:80px;}
+
+textarea{
+resize:none;
+height:70px;
+}
+
 .small-btn{
-background:#4b43c6;color:white;border:none;
-padding:6px 10px;border-radius:6px;cursor:pointer;margin:5px 0;
+background:#4b43c6;
+color:white;
+border:none;
+padding:6px 10px;
+border-radius:6px;
+cursor:pointer;
+margin:5px 3px;
 }
+
 .logout{
-position:absolute;top:10px;right:10px;
-background:red;color:white;border:none;
-padding:5px 10px;border-radius:6px;cursor:pointer;
+position:absolute;
+top:10px;
+right:10px;
+background:red;
+color:white;
+border:none;
+padding:5px 10px;
+border-radius:6px;
+cursor:pointer;
 }
+
 .hidden{display:none;}
+
 .card{
-background:white;padding:10px;border-radius:10px;margin-bottom:10px;
+background:white;
+padding:10px;
+border-radius:10px;
+margin-bottom:10px;
 }
 </style>
 </head>
@@ -67,18 +111,20 @@ background:white;padding:10px;border-radius:10px;margin-bottom:10px;
 
 <!-- APP -->
 <div id="app" class="container hidden">
+
 <button class="logout" onclick="logout()">Sair</button>
+
 <div class="header">
 <h1>📘 Registro de Aulas Pro</h1>
-<p>Professores • Disciplinas • Salas • Aulas</p>
+<p>Controle Escolar</p>
 </div>
 
 <div class="content" id="home">
-<button class="button blue" onclick="show('professores')">👨‍🏫 Gerenciar Professores</button>
-<button class="button blue" onclick="show('disciplinas')">📚 Gerenciar Disciplinas</button>
-<button class="button blue" onclick="show('salas')">🏫 Gerenciar Salas</button>
-<button class="button green" onclick="show('novaAula')">➕ Nova Aula</button>
-<button class="button blue" onclick="show('minhasAulas')">📊 Minhas Aulas</button>
+<button class="button blue" onclick="showSection('professores')">👨‍🏫 Professores</button>
+<button class="button blue" onclick="showSection('disciplinas')">📚 Disciplinas</button>
+<button class="button blue" onclick="showSection('salas')">🏫 Salas</button>
+<button class="button green" onclick="showSection('novaAula')">➕ Nova Aula</button>
+<button class="button blue" onclick="showSection('minhasAulas')">📊 Minhas Aulas</button>
 </div>
 
 <div class="content hidden" id="professores">
@@ -124,139 +170,176 @@ background:white;padding:10px;border-radius:10px;margin-bottom:10px;
 </div>
 
 <script>
+
 let professores = JSON.parse(localStorage.getItem("professores")) || [];
 let disciplinas = JSON.parse(localStorage.getItem("disciplinas")) || [];
 let salas = JSON.parse(localStorage.getItem("salas")) || [];
 let aulas = JSON.parse(localStorage.getItem("aulas")) || [];
 
-let ultimaAtividade=Date.now();
+let aulaEditando = null;
 
-function salvarLocal(){
-localStorage.setItem("professores",JSON.stringify(professores));
-localStorage.setItem("disciplinas",JSON.stringify(disciplinas));
-localStorage.setItem("salas",JSON.stringify(salas));
-localStorage.setItem("aulas",JSON.stringify(aulas));
+function salvarStorage(){
+localStorage.setItem("professores", JSON.stringify(professores));
+localStorage.setItem("disciplinas", JSON.stringify(disciplinas));
+localStorage.setItem("salas", JSON.stringify(salas));
+localStorage.setItem("aulas", JSON.stringify(aulas));
 }
 
 function login(){
 if(user.value==="admin" && pass.value==="1234"){
 loginScreen.classList.add("hidden");
 app.classList.remove("hidden");
-updateSelects();
-renderLists();
-renderAulas();
+atualizarTudo();
 }
 }
 
-function logout(){location.reload();}
+function logout(){
+location.reload();
+}
 
-document.onclick=document.onmousemove=document.onkeypress=function(){
-ultimaAtividade=Date.now();
-};
-setInterval(()=>{
-if(Date.now()-ultimaAtividade>60000){logout();}
-},5000);
-
-function show(id){
+function showSection(id){
 document.querySelectorAll("#app .content").forEach(e=>e.classList.add("hidden"));
 document.getElementById(id).classList.remove("hidden");
-updateSelects();
-renderAulas();
+atualizarTudo();
 }
 
 function voltar(){
 document.querySelectorAll("#app .content").forEach(e=>e.classList.add("hidden"));
 home.classList.remove("hidden");
+aulaEditando=null;
 }
 
 function addProfessor(){
-if(novoProfessor.value){
-professores.push(novoProfessor.value);
+if(novoProfessor.value.trim()){
+professores.push(novoProfessor.value.trim());
 novoProfessor.value="";
-salvarLocal();
-renderLists();
+salvarStorage();
+renderListas();
 }
 }
 
 function addDisciplina(){
-if(novaDisciplina.value){
-disciplinas.push(novaDisciplina.value);
+if(novaDisciplina.value.trim()){
+disciplinas.push(novaDisciplina.value.trim());
 novaDisciplina.value="";
-salvarLocal();
-renderLists();
+salvarStorage();
+renderListas();
 }
 }
 
 function addSala(){
-if(novaSala.value){
-salas.push(novaSala.value);
+if(novaSala.value.trim()){
+salas.push(novaSala.value.trim());
 novaSala.value="";
-salvarLocal();
-renderLists();
+salvarStorage();
+renderListas();
 }
 }
 
-function renderLists(){
-listaProfessores.innerHTML=professores.map(p=>"<li>"+p+"</li>").join("");
-listaDisciplinas.innerHTML=disciplinas.map(d=>"<li>"+d+"</li>").join("");
-listaSalas.innerHTML=salas.map(s=>"<li>"+s+"</li>").join("");
+function renderListas(){
+listaProfessores.innerHTML = professores.map(p=>`<li>${p}</li>`).join("");
+listaDisciplinas.innerHTML = disciplinas.map(d=>`<li>${d}</li>`).join("");
+listaSalas.innerHTML = salas.map(s=>`<li>${s}</li>`).join("");
 }
 
-function updateSelects(){
-professorSelect.innerHTML="<option value=''>Professor</option>"+professores.map(p=>"<option>"+p+"</option>").join("");
-disciplinaSelect.innerHTML="<option value=''>Disciplina</option>"+disciplinas.map(d=>"<option>"+d+"</option>").join("");
-salaSelect.innerHTML="<option value=''>Sala</option>"+salas.map(s=>"<option>"+s+"</option>").join("");
+function atualizarSelects(){
+professorSelect.innerHTML="<option value=''>Professor</option>"+professores.map(p=>`<option>${p}</option>`).join("");
+disciplinaSelect.innerHTML="<option value=''>Disciplina</option>"+disciplinas.map(d=>`<option>${d}</option>`).join("");
+salaSelect.innerHTML="<option value=''>Sala</option>"+salas.map(s=>`<option>${s}</option>`).join("");
 
-filtroProfessor.innerHTML="<option value=''>Todos Professores</option>"+professores.map(p=>"<option>"+p+"</option>").join("");
-filtroDisciplina.innerHTML="<option value=''>Todas Disciplinas</option>"+disciplinas.map(d=>"<option>"+d+"</option>").join("");
+filtroProfessor.innerHTML="<option value=''>Todos Professores</option>"+professores.map(p=>`<option>${p}</option>`).join("");
+filtroDisciplina.innerHTML="<option value=''>Todas Disciplinas</option>"+disciplinas.map(d=>`<option>${d}</option>`).join("");
 }
 
 function salvarAula(){
-aulas.push({
-professor:professorSelect.value,
-disciplina:disciplinaSelect.value,
-sala:salaSelect.value,
-data:dataAula.value,
-atual:conteudoAtual.value,
-proxima:conteudoProxima.value
-});
+
+if(!professorSelect.value) return alert("Selecione um professor");
+
+let aula = {
+professor: professorSelect.value,
+disciplina: disciplinaSelect.value,
+sala: salaSelect.value,
+data: dataAula.value,
+atual: conteudoAtual.value,
+proxima: conteudoProxima.value
+};
+
+if(aulaEditando !== null){
+aulas[aulaEditando] = aula;
+aulaEditando=null;
+alert("Aula atualizada!");
+}else{
+aulas.push(aula);
+alert("Aula salva!");
+}
+
 conteudoAtual.value="";
 conteudoProxima.value="";
 dataAula.value="";
-salvarLocal();
-alert("Aula salva permanentemente!");
+
+salvarStorage();
 renderAulas();
 }
 
 function renderAulas(){
-let lista=aulas.filter(a=>
+let lista = aulas.filter(a =>
 (!filtroData.value || a.data===filtroData.value) &&
 (!filtroProfessor.value || a.professor===filtroProfessor.value) &&
 (!filtroDisciplina.value || a.disciplina===filtroDisciplina.value)
 );
 
-listaAulas.innerHTML=lista.map((a,i)=>`
+listaAulas.innerHTML = lista.map((a,i)=>`
 <div class="card">
 <strong>${a.professor}</strong><br>
 ${a.disciplina} - ${a.sala}<br>
-${a.data}<br><br>
+${a.data || ""}<br><br>
+
 <b>Aula Atual:</b><br>${a.atual || "-"}<br><br>
-<b>Próxima Aula:</b><br>${a.proxima || "-"}<br>
-<button class="small-btn" onclick="usarProxima(${i})">Usar Próxima como Atual</button>
+<b>Próxima Aula:</b><br>${a.proxima || "-"}<br><br>
+
+<button class="small-btn" onclick="editarAula(${i})">✏️ Editar</button>
+<button class="small-btn" style="background:red" onclick="excluirAula(${i})">🗑️ Excluir</button>
+<button class="small-btn" onclick="usarProxima(${i})">🔄 Usar Próxima</button>
 </div>
 `).join("");
+}
+
+function editarAula(i){
+let a = aulas[i];
+showSection('novaAula');
+professorSelect.value=a.professor;
+disciplinaSelect.value=a.disciplina;
+salaSelect.value=a.sala;
+dataAula.value=a.data;
+conteudoAtual.value=a.atual;
+conteudoProxima.value=a.proxima;
+aulaEditando=i;
+}
+
+function excluirAula(i){
+if(confirm("Deseja excluir esta aula?")){
+aulas.splice(i,1);
+salvarStorage();
+renderAulas();
+}
 }
 
 function usarProxima(i){
 aulas[i].atual=aulas[i].proxima;
 aulas[i].proxima="";
-salvarLocal();
+salvarStorage();
 renderAulas();
 }
 
-renderLists();
-updateSelects();
+function atualizarTudo(){
+renderListas();
+atualizarSelects();
 renderAulas();
+}
+
+atualizarTudo();
+
 </script>
 </body>
 </html>
+
